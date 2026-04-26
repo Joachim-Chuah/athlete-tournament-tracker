@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests + coverage
+        run: npm run test:coverage
+
+      - name: Coverage threshold check
+        run: |
+          COVERAGE=$(cat coverage/coverage-summary.json | node -e "
+            const data = require('./coverage/coverage-summary.json');
+            const total = data.total;
+            const pct = (total.lines.covered / total.lines.total) * 100;
+            console.log(pct.toFixed(2));
+          ")
+          echo "Coverage: $COVERAGE%"
+          node -e "
+            const pct = parseFloat('$COVERAGE');
+            if (pct < 80) { console.error('Coverage ' + pct + '% is below 80% threshold'); process.exit(1); }
+            console.log('Coverage check passed:', pct + '%');
+          "
+
+      - name: Post coverage comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+            const t = summary.total;
+            const pct = n => ((n.covered / n.total) * 100).toFixed(1) + '%';
+            const body = [
+              '## Coverage Report',
+              `| Metric | Coverage |`,
+              `|--------|----------|`,
+              `| Lines | ${pct(t.lines)} |`,
+              `| Functions | ${pct(t.functions)} |`,
+              `| Branches | ${pct(t.branches)} |`,
+              `| Statements | ${pct(t.statements)} |`,
+            ].join('\n');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body,
+            });
+
+      - name: Build check
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
+          OPEN_EXCHANGE_RATES_KEY: placeholder

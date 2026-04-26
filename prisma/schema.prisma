@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String       @id @default(cuid())
+  email                String       @unique
+  name                 String
+  home_country         String
+  home_currency        String       @default("USD")
+  sport                Sport        @default(other)
+  monthly_income       Float        @default(0)
+  savings_balance      Float        @default(0)
+  monthly_sponsorship  Float        @default(0)
+  created_at           DateTime     @default(now())
+  tournaments          Tournament[]
+}
+
+model Tournament {
+  id                    String         @id @default(cuid())
+  user_id               String
+  user                  User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  name                  String
+  location              String
+  country               String
+  currency              String
+  start_date            DateTime
+  end_date              DateTime
+  duration_days         Int
+  entry_fee             Float          @default(0)
+  flight_cost           Float          @default(0)
+  accommodation_total   Float          @default(0)
+  daily_spending_cap    Float          @default(0)
+  coaching_cost         Float          @default(0)
+  misc_cost             Float          @default(0)
+  subsidy_by            String?
+  subsidy_amount        Float          @default(0)
+  subsidy_covers        SubsidyCovers?
+  sponsorship_allocated Float          @default(0)
+  prize_rounds          Json
+  created_at            DateTime       @default(now())
+  updated_at            DateTime       @updatedAt
+
+  @@index([user_id])
+}
+
+enum Sport {
+  tennis
+  athletics
+  combat
+  golf
+  other
+}
+
+enum SubsidyCovers {
+  flights
+  accommodation
+  full_expenses
+  flat_stipend
+}
