@@ -7,9 +7,9 @@ on:
     branches: [main]
 
 jobs:
-  ci:
+  frontend:
+    name: Frontend (Node)
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v5
 
@@ -24,54 +24,44 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Unit tests + coverage
-        run: npm run test:coverage
+      - name: Build check
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:5000
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
 
-      - name: Coverage threshold check
+  backend:
+    name: Backend (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests + coverage
         run: |
-          node -e "
-            const fs = require('fs');
-            const data = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
-            const t = data.total;
-            const pct = (t.lines.covered / t.lines.total) * 100;
-            console.log('Coverage: ' + pct.toFixed(2) + '%');
-            if (pct < 80) {
-              console.error('Coverage ' + pct.toFixed(2) + '% is below 80% threshold');
-              process.exit(1);
-            }
-            console.log('Coverage check passed');
-          "
+          pytest backend/tests/ -v \
+            --cov=backend/utils \
+            --cov-report=term-missing \
+            --cov-fail-under=80
 
       - name: Post coverage comment
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
-            const fs = require('fs');
-            const summary = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
-            const t = summary.total;
-            const pct = n => n.total > 0 ? ((n.covered / n.total) * 100).toFixed(1) + '%' : 'N/A';
-            const body = [
-              '## Coverage Report',
-              `| Metric | Coverage |`,
-              `|--------|----------|`,
-              `| Lines | ${pct(t.lines)} |`,
-              `| Functions | ${pct(t.functions)} |`,
-              `| Branches | ${pct(t.branches)} |`,
-              `| Statements | ${pct(t.statements)} |`,
-            ].join('\n');
+            const { execSync } = require('child_process');
+            const out = execSync('pytest backend/tests/ --cov=backend/utils --cov-report=term-missing -q 2>&1 || true').toString();
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body,
+              body: `## Python Coverage\n\`\`\`\n${out.slice(-2000)}\n\`\`\``,
             });
-
-      - name: Build check
-        run: npm run build
-        env:
-          DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
-          OPEN_EXCHANGE_RATES_KEY: placeholder
-          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
-          SUPABASE_SERVICE_ROLE_KEY: placeholder

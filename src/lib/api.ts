@@ -2,7 +2,10 @@ import type { AthleteProfile, Tournament, PnLResult } from "@/types";
 
 export type TournamentWithPnL = Tournament & { pnl: PnLResult; home_currency: string };
 
-async function request<T>(url: string, options?: RequestInit): Promise<T> {
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+
+async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const url = path.startsWith("http") ? path : `${API_BASE}${path}`;
   const res = await fetch(url, {
     headers: { "Content-Type": "application/json" },
     ...options,
