@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/layout/AppShell";
-import { Card, CardHeader, CardTitle, CardValue } from "@/components/ui/card";
+import { Card, CardTitle, CardValue } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatMoney, formatDate } from "@/lib/utils";
@@ -144,12 +144,12 @@ function TournamentCard({ t, homeCurrency }: { t: TournamentWithPnL; homeCurrenc
 }
 
 export default function DashboardPage() {
-  const { user, loading } = useUser();
+  const { user } = useUser();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) router.replace("/profile");
-  }, [loading, user, router]);
+    if (!user) router.replace("/profile");
+  }, [user, router]);
 
   const { data: tournaments = [], isLoading } = useQuery({
     queryKey: ["tournaments", user?.id],
@@ -157,7 +157,7 @@ export default function DashboardPage() {
     enabled: !!user,
   });
 
-  if (loading || !user) {
+  if (!user) {
     return (
       <AppShell>
         <div className="flex h-64 items-center justify-center">

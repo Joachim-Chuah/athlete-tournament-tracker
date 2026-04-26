@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { TrendingUp, LayoutDashboard, User, Plus, Trophy } from "lucide-react";
+import { LayoutDashboard, User, Plus, Trophy } from "lucide-react";
 
 const nav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },

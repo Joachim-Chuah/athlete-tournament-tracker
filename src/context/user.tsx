@@ -1,33 +1,31 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import type { AthleteProfile } from "@/types";
 
 type UserContextType = {
   user: AthleteProfile | null;
   setUser: (user: AthleteProfile | null) => void;
-  loading: boolean;
+  loading: false;
 };
 
 const UserContext = createContext<UserContextType>({
   user: null,
   setUser: () => {},
-  loading: true,
+  loading: false,
 });
 
-export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUserState] = useState<AthleteProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+function readStorage(): AthleteProfile | null {
+  try {
+    const stored = localStorage.getItem("athlete_user");
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
+}
 
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("athlete_user");
-      if (stored) setUserState(JSON.parse(stored));
-    } catch {
-      // ignore
-    }
-    setLoading(false);
-  }, []);
+export function UserProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUserState] = useState<AthleteProfile | null>(readStorage);
 
   const setUser = (u: AthleteProfile | null) => {
     setUserState(u);
@@ -36,7 +34,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser, loading }}>
+    <UserContext.Provider value={{ user, setUser, loading: false }}>
       {children}
     </UserContext.Provider>
   );

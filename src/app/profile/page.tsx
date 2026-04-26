@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card } from "@/components/ui/card";
@@ -47,30 +47,15 @@ export default function ProfilePage() {
   const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
-    email: "",
-    name: "",
-    home_country: "",
-    home_currency: "USD",
-    sport: "tennis",
-    monthly_income: "",
-    savings_balance: "",
-    monthly_sponsorship: "",
+    email: user?.email ?? "",
+    name: user?.name ?? "",
+    home_country: user?.home_country ?? "",
+    home_currency: user?.home_currency ?? "USD",
+    sport: user?.sport ?? "tennis",
+    monthly_income: user ? String(user.monthly_income) : "",
+    savings_balance: user ? String(user.savings_balance) : "",
+    monthly_sponsorship: user ? String(user.monthly_sponsorship) : "",
   });
-
-  useEffect(() => {
-    if (user) {
-      setForm({
-        email: user.email ?? "",
-        name: user.name,
-        home_country: user.home_country,
-        home_currency: user.home_currency,
-        sport: user.sport,
-        monthly_income: String(user.monthly_income),
-        savings_balance: String(user.savings_balance),
-        monthly_sponsorship: String(user.monthly_sponsorship),
-      });
-    }
-  }, [user]);
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm((f) => ({ ...f, [field]: e.target.value }));

@@ -29,17 +29,17 @@ jobs:
 
       - name: Coverage threshold check
         run: |
-          COVERAGE=$(cat coverage/coverage-summary.json | node -e "
-            const data = require('./coverage/coverage-summary.json');
-            const total = data.total;
-            const pct = (total.lines.covered / total.lines.total) * 100;
-            console.log(pct.toFixed(2));
-          ")
-          echo "Coverage: $COVERAGE%"
           node -e "
-            const pct = parseFloat('$COVERAGE');
-            if (pct < 80) { console.error('Coverage ' + pct + '% is below 80% threshold'); process.exit(1); }
-            console.log('Coverage check passed:', pct + '%');
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
+            const t = data.total;
+            const pct = (t.lines.covered / t.lines.total) * 100;
+            console.log('Coverage: ' + pct.toFixed(2) + '%');
+            if (pct < 80) {
+              console.error('Coverage ' + pct.toFixed(2) + '% is below 80% threshold');
+              process.exit(1);
+            }
+            console.log('Coverage check passed');
           "
 
       - name: Post coverage comment
@@ -50,7 +50,7 @@ jobs:
             const fs = require('fs');
             const summary = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8'));
             const t = summary.total;
-            const pct = n => ((n.covered / n.total) * 100).toFixed(1) + '%';
+            const pct = n => n.total > 0 ? ((n.covered / n.total) * 100).toFixed(1) + '%' : 'N/A';
             const body = [
               '## Coverage Report',
               `| Metric | Coverage |`,
@@ -72,3 +72,6 @@ jobs:
         env:
           DATABASE_URL: postgresql://placeholder:placeholder@localhost:5432/placeholder
           OPEN_EXCHANGE_RATES_KEY: placeholder
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
+          SUPABASE_SERVICE_ROLE_KEY: placeholder
