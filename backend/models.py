@@ -1,7 +1,7 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Optional
-from sqlalchemy import String, Float, Integer, DateTime, Enum as SAEnum, Index
+from sqlalchemy import String, Float, Integer, DateTime, Enum as SAEnum, Index, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.database import Base
@@ -49,7 +49,7 @@ class Tournament(Base):
     __tablename__ = "Tournament"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    user_id: Mapped[str] = mapped_column(String, nullable=False)
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("User.id", ondelete="CASCADE"), nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)
     location: Mapped[str] = mapped_column(String, nullable=False)
     country: Mapped[str] = mapped_column(String, nullable=False)
