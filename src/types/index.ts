@@ -18,6 +18,7 @@ export type PrizeRounds = {
 
 export type AthleteProfile = {
   id: string;
+  email: string;
   name: string;
   home_country: string;
   home_currency: string;
