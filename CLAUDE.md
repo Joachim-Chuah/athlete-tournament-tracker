@@ -7,7 +7,7 @@ A web app for athletes to track tournament expenses, model prize money scenarios
 ## Core Domain Logic
 
 ### P&L Formula
-The central calculation that powers the app. Always compute it in `server/utils/pnl.js`:
+The central calculation that powers the app. Always compute it in `backend/utils/pnl.py`:
 
 ```
 Net Result =
@@ -107,19 +107,17 @@ When building new features: read the relevant model and route files first, plan 
 
 Every new feature and code change must include:
 
-- Unit tests covering the new logic — no exceptions
-- Unit tests for all P&L calculation logic in `server/utils/pnl.js`
+- Python unit tests for any new backend logic — no exceptions
+- Unit tests for all P&L calculation logic in `backend/utils/pnl.py`
 - Unit tests for currency conversion edge cases (null rates, same currency)
-- Integration tests for any new or modified API routes
-- Test coverage must not drop below 80% on core utils — check before every commit
+- Test coverage must not drop below 80% on `backend/utils/` — check before every commit
+- Run tests with: `.venv/bin/pytest backend/tests/ -v`
 
 ### GitHub Actions
-Set up and maintain GitHub Action scripts for the following:
-
-- **CI on every PR** — run the full test suite, fail the PR if any test fails or coverage drops below threshold
-- **Coverage report** — generate and post a coverage summary as a PR comment on every pull request
-- **Lint check** — run ESLint as part of CI, fail on errors
-- **Build check** — verify the production build completes without errors before merging
+- **CI on every PR** — runs frontend lint/build and Python tests; fails if any test fails or coverage drops below 80%
+- **Coverage report** — posts a Python coverage summary as a PR comment
+- **Lint check** — ESLint on the frontend
+- **Build check** — Next.js production build
 
 ---
 
@@ -135,6 +133,7 @@ chore: update exchange rate cache TTL
 
 ## Important Notes
 
-- This app handles real financial data — validate all monetary inputs server-side, never trust client-only math
-- FX rates must always be fetched server-side; never expose the API key to the client
-- When in doubt about the P&L formula, refer to `server/utils/pnl.js` as the single source of truth
+- This app handles real financial data — validate all monetary inputs in Flask, never trust client-only math
+- FX rates must always be fetched server-side (Flask); never expose the API key to the client
+- When in doubt about the P&L formula, refer to `backend/utils/pnl.py` as the single source of truth
+- Backend is Python Flask. Frontend is Next.js. They are separate processes communicating via HTTP.
