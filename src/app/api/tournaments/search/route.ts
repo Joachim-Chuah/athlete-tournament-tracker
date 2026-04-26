@@ -52,8 +52,8 @@ function psaTournamentToResult(raw: PsaRaw) {
   } catch { /* skip */ }
 
   const comp = competitions[0];
-  const levelId: number = comp?.level_id ?? null;
-  const tier = LEVEL_TIERS[levelId] ?? "Open";
+  const levelId = comp?.level_id ?? undefined;
+  const tier = (levelId !== undefined ? LEVEL_TIERS[levelId] : undefined) ?? "Open";
   const prizeTotal: number = comp?.prize_total ?? 0;
   const drawSize: number = comp?.draws?.[0]?.size ?? 32;
 
