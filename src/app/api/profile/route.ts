@@ -7,7 +7,7 @@ const ProfileSchema = z.object({
   name: z.string().min(1),
   home_country: z.string().min(1),
   home_currency: z.string().length(3),
-  sport: z.enum(["tennis", "athletics", "combat", "golf", "other"]),
+  sport: z.string().min(1),
   monthly_income: z.number().min(0),
   savings_balance: z.number().min(0),
   monthly_sponsorship: z.number().min(0),

@@ -1,4 +1,4 @@
-export type Sport = "tennis" | "athletics" | "combat" | "golf" | "other";
+export type Sport = string;
 
 export type SubsidyCovers =
   | "flights"

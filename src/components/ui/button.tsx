@@ -4,16 +4,16 @@ type Variant = "primary" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-emerald-500 text-black font-semibold hover:bg-emerald-400",
-  secondary: "bg-zinc-800 text-white hover:bg-zinc-700 border border-zinc-700",
-  ghost: "text-zinc-400 hover:text-white hover:bg-zinc-800",
-  danger: "bg-red-500/15 text-red-400 hover:bg-red-500/25 border border-red-500/30",
+  primary: "bg-emerald-500 text-black font-semibold hover:bg-emerald-400 shadow-[0_0_16px_rgba(16,185,129,0.25)] hover:shadow-[0_0_24px_rgba(16,185,129,0.4)]",
+  secondary: "bg-zinc-800/80 text-white hover:bg-zinc-700/80 border border-zinc-700/60 backdrop-blur-sm",
+  ghost: "text-zinc-400 hover:text-white hover:bg-zinc-800/60",
+  danger: "bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/25",
 };
 
 const sizes: Record<Size, string> = {
-  sm: "px-3 py-1.5 text-sm",
+  sm: "px-3 py-1.5 text-xs",
   md: "px-4 py-2 text-sm",
-  lg: "px-6 py-3 text-base",
+  lg: "px-6 py-3 text-sm",
 };
 
 export function Button({
@@ -28,7 +28,7 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
+        "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed",
         variants[variant],
         sizes[size],
         className

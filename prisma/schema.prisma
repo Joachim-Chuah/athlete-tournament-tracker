@@ -12,7 +12,7 @@ model User {
   name                 String
   home_country         String
   home_currency        String       @default("USD")
-  sport                Sport        @default(other)
+  sport                String       @default("other")
   monthly_income       Float        @default(0)
   savings_balance      Float        @default(0)
   monthly_sponsorship  Float        @default(0)
@@ -46,14 +46,6 @@ model Tournament {
   updated_at            DateTime       @updatedAt
 
   @@index([user_id])
-}
-
-enum Sport {
-  tennis
-  athletics
-  combat
-  golf
-  other
 }
 
 enum SubsidyCovers {

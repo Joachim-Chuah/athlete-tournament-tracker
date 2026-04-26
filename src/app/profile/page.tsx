@@ -10,13 +10,34 @@ import { useUser } from "@/context/user";
 import { api } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 
-const CURRENCIES = ["USD", "EUR", "GBP", "AUD", "NGN", "ZAR", "JPY", "BRL", "CAD", "CHF"];
+const CURRENCIES = ["USD", "EUR", "GBP", "AUD", "NGN", "ZAR", "JPY", "BRL", "CAD", "CHF", "SGD", "AED", "INR", "MYR", "KES"];
+
 const SPORTS = [
-  { value: "tennis", label: "Tennis" },
-  { value: "athletics", label: "Track & Field" },
-  { value: "combat", label: "Combat Sports" },
-  { value: "golf", label: "Golf" },
-  { value: "other", label: "Other" },
+  "Athletics / Track & Field",
+  "Badminton",
+  "Baseball",
+  "Basketball",
+  "Boxing",
+  "Combat Sports / MMA",
+  "Cricket",
+  "Cycling",
+  "Football / Soccer",
+  "Golf",
+  "Gymnastics",
+  "Ice Hockey",
+  "Judo",
+  "Padel",
+  "Rowing",
+  "Rugby",
+  "Snooker / Billiards",
+  "Squash",
+  "Swimming",
+  "Table Tennis",
+  "Tennis",
+  "Triathlon",
+  "Volleyball",
+  "Wrestling",
+  "Other",
 ];
 
 export default function ProfilePage() {
@@ -64,7 +85,7 @@ export default function ProfilePage() {
         monthly_income: parseFloat(form.monthly_income) || 0,
         savings_balance: parseFloat(form.savings_balance) || 0,
         monthly_sponsorship: parseFloat(form.monthly_sponsorship) || 0,
-        sport: form.sport as "tennis" | "athletics" | "combat" | "golf" | "other",
+        sport: form.sport,
       });
       setUser(saved);
       router.push("/dashboard");
@@ -127,7 +148,7 @@ export default function ProfilePage() {
             <FieldGroup>
               <Label htmlFor="sport">Sport</Label>
               <Select id="sport" value={form.sport} onChange={set("sport")}>
-                {SPORTS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                {SPORTS.map((s) => <option key={s} value={s.toLowerCase().replace(/\s+\/\s+/g, "_").replace(/\s+/g, "_")}>{s}</option>)}
               </Select>
             </FieldGroup>
           </div>
