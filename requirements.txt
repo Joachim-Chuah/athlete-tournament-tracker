@@ -1,6 +1,6 @@
 flask==3.1.0
 flask-cors==5.0.0
-sqlalchemy==2.0.36
+sqlalchemy>=2.0.40
 psycopg[binary]>=3.2.0
 python-dotenv==1.0.1
 requests==2.32.3

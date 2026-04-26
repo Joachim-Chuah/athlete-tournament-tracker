@@ -1,5 +1,7 @@
+from __future__ import annotations
 from datetime import datetime, timezone
-from sqlalchemy import String, Float, Integer, Boolean, DateTime, Enum as SAEnum, Index
+from typing import Optional
+from sqlalchemy import String, Float, Integer, DateTime, Enum as SAEnum, Index
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.database import Base
@@ -61,7 +63,7 @@ class Tournament(Base):
     daily_spending_cap: Mapped[float] = mapped_column(Float, default=0.0)
     coaching_cost: Mapped[float] = mapped_column(Float, default=0.0)
     misc_cost: Mapped[float] = mapped_column(Float, default=0.0)
-    subsidy_by: Mapped[str | None] = mapped_column(String, nullable=True)
+    subsidy_by: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     subsidy_amount: Mapped[float] = mapped_column(Float, default=0.0)
     subsidy_covers = mapped_column(subsidy_covers_type, nullable=True)
     sponsorship_allocated: Mapped[float] = mapped_column(Float, default=0.0)
@@ -112,13 +114,13 @@ class KnownTournament(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     sport: Mapped[str] = mapped_column(String, default="squash")
     tier: Mapped[str] = mapped_column(String, nullable=False)
-    level_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    level_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     location: Mapped[str] = mapped_column(String, nullable=False)
     country: Mapped[str] = mapped_column(String, nullable=False)
     country_code: Mapped[str] = mapped_column(String, nullable=False)
     currency: Mapped[str] = mapped_column(String, default="USD")
-    start_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    end_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    start_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    end_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
     duration_days: Mapped[int] = mapped_column(Integer, default=7)
     prize_total: Mapped[float] = mapped_column(Float, default=0.0)
     prize_rounds: Mapped[dict] = mapped_column(JSONB, nullable=False, default={})
