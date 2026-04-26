@@ -18,7 +18,9 @@ def get_engine():
     if url.startswith("postgresql://") or url.startswith("postgres://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
         url = url.replace("postgres://", "postgresql+psycopg://", 1)
-    return create_engine(url, pool_pre_ping=True)
+    # prepare_threshold=None disables prepared statements — required when
+    # connecting through Supabase's pgbouncer transaction pooler (port 6543)
+    return create_engine(url, pool_pre_ping=True, connect_args={"prepare_threshold": None})
 
 
 engine = get_engine()
