@@ -14,6 +14,10 @@ def get_engine():
     url = os.environ.get("DATABASE_URL")
     if not url:
         raise RuntimeError("DATABASE_URL is not set")
+    # Use psycopg3 driver (postgresql+psycopg) — psycopg2 has no Python 3.14 wheels
+    if url.startswith("postgresql://") or url.startswith("postgres://"):
+        url = url.replace("postgresql://", "postgresql+psycopg://", 1)
+        url = url.replace("postgres://", "postgresql+psycopg://", 1)
     return create_engine(url, pool_pre_ping=True)
 
 
