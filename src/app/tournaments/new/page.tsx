@@ -218,12 +218,20 @@ export default function NewTournamentPage() {
 
   const handleAutofill = (t: SeedTournament) => {
     const pr = t.prize_rounds;
-    const now = new Date();
-    const year = now.getMonth() + 1 >= t.typical_month ? now.getFullYear() + 1 : now.getFullYear();
-    const start = new Date(year, t.typical_month - 1, 1);
-    const end = new Date(start);
-    end.setDate(start.getDate() + t.duration_days);
     const fmt = (d: Date) => d.toISOString().split("T")[0];
+
+    let startStr = t.start_date ?? "";
+    let endStr = t.end_date ?? "";
+
+    if (!startStr) {
+      const now = new Date();
+      const year = now.getMonth() + 1 >= t.typical_month ? now.getFullYear() + 1 : now.getFullYear();
+      const start = new Date(year, t.typical_month - 1, 1);
+      const end = new Date(start);
+      end.setDate(start.getDate() + t.duration_days);
+      startStr = fmt(start);
+      endStr = fmt(end);
+    }
 
     setFormState((f) => ({
       ...f,
@@ -231,8 +239,8 @@ export default function NewTournamentPage() {
       location: t.location,
       country: t.country,
       currency: t.currency,
-      start_date: fmt(start),
-      end_date: fmt(end),
+      start_date: startStr,
+      end_date: endStr,
       duration_days: String(t.duration_days),
       prize_r1: pr.r1 != null ? String(pr.r1) : "",
       prize_r2: pr.r2 != null ? String(pr.r2) : "",

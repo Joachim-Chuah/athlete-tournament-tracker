@@ -8,6 +8,8 @@ export type SeedTournament = {
   currency: string;
   typical_month: number; // 1–12
   duration_days: number;
+  start_date?: string | null; // ISO date — present when sourced from DB
+  end_date?: string | null;
   prize_rounds: Partial<Record<"r1" | "r2" | "r3" | "qf" | "sf" | "f" | "w", number>>;
 };
 

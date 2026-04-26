@@ -48,6 +48,32 @@ model Tournament {
   @@index([user_id])
 }
 
+model KnownTournament {
+  id            String    @id @default(cuid())
+  psa_id        String    @unique
+  name          String
+  sport         String    @default("squash")
+  tier          String
+  level_id      Int?
+  location      String
+  country       String
+  country_code  String
+  currency      String    @default("USD")
+  start_date    DateTime?
+  end_date      DateTime?
+  duration_days Int       @default(7)
+  prize_total   Float     @default(0)
+  prize_rounds  Json      @default("{}")
+  draw_size     Int       @default(32)
+  gender        String    @default("Open")
+  source        String    @default("psa")
+  scraped_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  @@index([sport, start_date])
+  @@index([name])
+}
+
 enum SubsidyCovers {
   flights
   accommodation
