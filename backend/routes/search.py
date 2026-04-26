@@ -1,4 +1,6 @@
+import json as _json
 import requests
+from datetime import datetime, timedelta, timezone
 from flask import Blueprint, request, jsonify
 from sqlalchemy import or_, func
 from backend.database import Session
@@ -14,6 +16,19 @@ LEVEL_TIERS = {
     108: "Silver", 110: "Silver", 107: "Bronze",
     109: "Challenger", 104: "Challenger", 106: "Qualifying", 98: "Challenger",
 }
+
+LEVEL_TOUR = {
+    101: "World Tour", 117: "World Tour", 97: "World Tour",
+    100: "World Tour", 99: "World Tour", 116: "World Tour",
+    108: "World Tour", 110: "World Tour", 107: "Challenger Tour",
+    109: "Challenger Tour", 104: "Challenger Tour", 106: "Qualifying", 98: "Challenger Tour",
+}
+
+
+def _dedupe_key(result: dict) -> str:
+    """Name + start_date so Men's/Women's entries don't collide and same tournament
+    in different years are treated as distinct."""
+    return f"{result['name'].lower()}|{result.get('start_date', '')}"
 
 
 def _estimate_prize_rounds(prize_total: float, draw_size: int, tier: str) -> dict:
@@ -38,29 +53,23 @@ def _psa_raw_to_result(raw: dict) -> dict | None:
         city = parts[0] if len(parts) > 1 else loc
         country = parts[-1] if len(parts) > 1 else ""
 
-        start_str = meta.get("start_date", "")
-        end_str = meta.get("end_date", "")
+        def parse_date(s: str):
+            return f"{s[:4]}-{s[4:6]}-{s[6:8]}" if len(s) >= 8 else None
 
-        def parse_date(s):
-            if len(s) < 8:
-                return None
-            return f"{s[:4]}-{s[4:6]}-{s[6:8]}"
+        start_date = parse_date(meta.get("start_date", ""))
+        end_date = parse_date(meta.get("end_date", ""))
 
-        start_date = parse_date(start_str)
-        end_date = parse_date(end_str)
-
-        import json
         comps = meta.get("competitions", "[]")
         if isinstance(comps, str):
-            comps = json.loads(comps)
+            comps = _json.loads(comps)
         comp = comps[0] if comps else {}
 
         level_id = comp.get("level_id")
         tier = LEVEL_TIERS.get(level_id, "Open")
+        tour_level = LEVEL_TOUR.get(level_id, "World Tour")
         prize_total = comp.get("prize_total") or 0
         draw_size = (comp.get("draws") or [{}])[0].get("size", 32) if comp.get("draws") else 32
 
-        from datetime import datetime
         start = datetime.fromisoformat(start_date) if start_date else None
         end = datetime.fromisoformat(end_date) if end_date else None
         duration = max(1, (end - start).days) if start and end else 7
@@ -70,11 +79,13 @@ def _psa_raw_to_result(raw: dict) -> dict | None:
             "name": name,
             "sport": "squash",
             "tier": tier,
+            "tour_level": tour_level,
             "location": city,
             "country": country,
             "currency": "USD",
             "typical_month": start.month if start else 6,
             "duration_days": duration,
+            "prize_total": prize_total,
             "prize_rounds": _estimate_prize_rounds(prize_total, draw_size, tier),
             "start_date": start_date,
             "end_date": end_date,
@@ -93,8 +104,9 @@ def _search_psa_live(q: str) -> list:
         )
         if not resp.ok:
             return []
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=14)).date().isoformat()
         results = [_psa_raw_to_result(r) for r in resp.json()]
-        return [r for r in results if r is not None]
+        return [r for r in results if r is not None and (r.get("start_date") or "9999") >= cutoff]
     except Exception:
         return []
 
@@ -104,10 +116,15 @@ def search_tournaments():
     q = request.args.get("q", "").strip()
     sport = request.args.get("sport", "").strip().lower() or None
 
+    # Show tournaments starting within the last 14 days (catches in-progress) or in the future
+    upcoming_cutoff = datetime.now(timezone.utc) - timedelta(days=14)
+
     db_results = []
     try:
         with Session() as db:
-            query = db.query(KnownTournament)
+            query = db.query(KnownTournament).filter(
+                KnownTournament.start_date >= upcoming_cutoff
+            )
             if sport:
                 query = query.filter(KnownTournament.sport == sport)
             if q:
@@ -117,6 +134,7 @@ def search_tournaments():
                         func.lower(KnownTournament.location).contains(q.lower()),
                         func.lower(KnownTournament.country).contains(q.lower()),
                         func.lower(KnownTournament.tier).contains(q.lower()),
+                        func.lower(KnownTournament.tour_level).contains(q.lower()),
                     )
                 )
             results = (
@@ -133,8 +151,8 @@ def search_tournaments():
 
     if needs_live:
         live = _search_psa_live(q)
-        existing_names = {r["name"].lower() for r in db_results}
-        fresh = [r for r in live if r["name"].lower() not in existing_names]
+        existing_keys = {_dedupe_key(r) for r in db_results}
+        fresh = [r for r in live if _dedupe_key(r) not in existing_keys]
         merged = (db_results + fresh)[:12]
         if merged:
             return jsonify(merged)

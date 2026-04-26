@@ -66,6 +66,7 @@ model KnownTournament {
   prize_rounds  Json      @default("{}")
   draw_size     Int       @default(32)
   gender        String    @default("Open")
+  tour_level    String    @default("World Tour")
   source        String    @default("psa")
   scraped_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt

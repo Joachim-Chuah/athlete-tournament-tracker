@@ -31,6 +31,23 @@ const LEVEL_TIERS = {
   98:  "Challenger",
 };
 
+// Level ID → tour level label
+const LEVEL_TOUR = {
+  101: "World Tour",
+  117: "World Tour",
+  97:  "World Tour",
+  100: "World Tour",
+  99:  "World Tour",
+  116: "World Tour",
+  108: "World Tour",
+  110: "World Tour",
+  107: "Challenger Tour",
+  109: "Challenger Tour",
+  104: "Challenger Tour",
+  106: "Qualifying",
+  98:  "Challenger Tour",
+};
+
 // ISO country code → full name
 const COUNTRY_NAMES = {
   US: "United States", GB: "United Kingdom", UK: "United Kingdom",
@@ -158,6 +175,7 @@ async function scrape(db) {
 
       const levelId = comp.level_id ?? null;
       const tier = LEVEL_TIERS[levelId] ?? "Open";
+      const tourLevel = LEVEL_TOUR[levelId] ?? "World Tour";
       const prizeTotal = comp.prize_total ?? 0;
       const drawSize = comp.draws?.[0]?.size ?? 32;
       const gender = comp.name ?? "Open";
@@ -176,6 +194,7 @@ async function scrape(db) {
         update: {
           name,
           tier,
+          tour_level: tourLevel,
           level_id: levelId,
           location: city,
           country,
@@ -194,6 +213,7 @@ async function scrape(db) {
           name,
           sport: "squash",
           tier,
+          tour_level: tourLevel,
           level_id: levelId,
           location: city,
           country,

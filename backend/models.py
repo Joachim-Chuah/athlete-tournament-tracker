@@ -126,6 +126,7 @@ class KnownTournament(Base):
     prize_rounds: Mapped[dict] = mapped_column(JSONB, nullable=False, default={})
     draw_size: Mapped[int] = mapped_column(Integer, default=32)
     gender: Mapped[str] = mapped_column(String, default="Open")
+    tour_level: Mapped[str] = mapped_column(String, default="World Tour")
     source: Mapped[str] = mapped_column(String, default="psa")
     scraped_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(
@@ -140,11 +141,13 @@ class KnownTournament(Base):
             "name": self.name,
             "sport": self.sport,
             "tier": self.tier,
+            "tour_level": self.tour_level,
             "location": self.location,
             "country": self.country,
             "currency": self.currency,
             "typical_month": self.start_date.month if self.start_date else 6,
             "duration_days": self.duration_days,
+            "prize_total": self.prize_total,
             "prize_rounds": self.prize_rounds,
             "start_date": self.start_date.date().isoformat() if self.start_date else None,
             "end_date": self.end_date.date().isoformat() if self.end_date else None,
