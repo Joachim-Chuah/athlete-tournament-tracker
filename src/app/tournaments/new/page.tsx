@@ -9,6 +9,8 @@ import { Input, Label, FieldGroup, Select } from "@/components/ui/input";
 import { useUser } from "@/context/user";
 import { api } from "@/lib/api";
 import { ChevronRight, ChevronLeft, Loader2 } from "lucide-react";
+import { TournamentSearch } from "@/components/tournaments/TournamentSearch";
+import type { SeedTournament } from "@/data/seed-tournaments";
 
 const STEPS = ["Tournament Details", "Prize Money", "Travel & Costs", "Funding", "Spending Plan"];
 
@@ -214,6 +216,34 @@ export default function NewTournamentPage() {
   const set = (field: keyof FormState, value: string | boolean) =>
     setFormState((f) => ({ ...f, [field]: value }));
 
+  const handleAutofill = (t: SeedTournament) => {
+    const pr = t.prize_rounds;
+    const now = new Date();
+    const year = now.getMonth() + 1 >= t.typical_month ? now.getFullYear() + 1 : now.getFullYear();
+    const start = new Date(year, t.typical_month - 1, 1);
+    const end = new Date(start);
+    end.setDate(start.getDate() + t.duration_days);
+    const fmt = (d: Date) => d.toISOString().split("T")[0];
+
+    setFormState((f) => ({
+      ...f,
+      name: t.name,
+      location: t.location,
+      country: t.country,
+      currency: t.currency,
+      start_date: fmt(start),
+      end_date: fmt(end),
+      duration_days: String(t.duration_days),
+      prize_r1: pr.r1 != null ? String(pr.r1) : "",
+      prize_r2: pr.r2 != null ? String(pr.r2) : "",
+      prize_r3: pr.r3 != null ? String(pr.r3) : "",
+      prize_qf: pr.qf != null ? String(pr.qf) : "",
+      prize_sf: pr.sf != null ? String(pr.sf) : "",
+      prize_f: pr.f != null ? String(pr.f) : "",
+      prize_w: pr.w != null ? String(pr.w) : "",
+    }));
+  };
+
   const handleSubmit = async () => {
     if (!user) return;
     setSubmitting(true);
@@ -274,6 +304,13 @@ export default function NewTournamentPage() {
         </div>
 
         <StepIndicator current={step} total={STEPS.length} />
+
+        {step === 0 && (
+          <TournamentSearch
+            onSelect={handleAutofill}
+            sport={user?.sport}
+          />
+        )}
 
         <Card>
           <StepContent form={form} set={set} />
