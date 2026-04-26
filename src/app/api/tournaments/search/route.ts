@@ -35,15 +35,17 @@ function parseLocation(loc: string) {
   return { city: city || loc, country: code };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function psaTournamentToResult(raw: any) {
-  const meta = raw.meta ?? {};
-  const name: string = raw.title?.rendered ?? "Unknown";
-  const { city, country } = parseLocation(meta.location ?? "");
-  const startDate = parsePsaDate(meta.start_date);
-  const endDate = parsePsaDate(meta.end_date);
+type PsaComp = { level_id?: number; prize_total?: number; draws?: { size?: number }[] };
+type PsaRaw = { id: number; title?: { rendered?: string }; meta?: { location?: string; start_date?: string; end_date?: string; competitions?: string | PsaComp[] } };
 
-  let competitions: any[] = [];
+function psaTournamentToResult(raw: PsaRaw) {
+  const meta = raw.meta ?? {};
+  const name = raw.title?.rendered ?? "Unknown";
+  const { city, country } = parseLocation(meta.location ?? "");
+  const startDate = parsePsaDate(meta.start_date ?? "");
+  const endDate = parsePsaDate(meta.end_date ?? "");
+
+  let competitions: PsaComp[] = [];
   try {
     competitions = typeof meta.competitions === "string"
       ? JSON.parse(meta.competitions) : (meta.competitions ?? []);
