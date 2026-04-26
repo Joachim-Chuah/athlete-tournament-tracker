@@ -32,7 +32,8 @@ export function TournamentSearch({ onSelect, sport }: Props) {
       try {
         const params = new URLSearchParams({ q: query });
         if (sport) params.set("sport", sport);
-        const res = await fetch(`/api/tournaments/search?${params}`);
+        const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+        const res = await fetch(`${base}/api/tournaments/search?${params}`);
         const data = await res.json();
         setResults(data);
         setOpen(true);
