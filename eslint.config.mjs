@@ -11,7 +11,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    "scripts/**",   // plain Node.js CommonJS scripts, not part of the app
+    "scripts/**",
+    ".venv/**",
+    "coverage/**",
   ]),
 ]);
 

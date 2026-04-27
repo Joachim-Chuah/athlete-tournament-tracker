@@ -24,7 +24,7 @@ const Problem = () => {
             </p>
             <p className="mt-4 text-base leading-relaxed text-muted-foreground md:text-lg">
               Until now, the answer to{" "}
-              <em className="font-serif text-foreground">"will this tournament make me money?"</em> was
+              <em className="font-serif text-foreground">&ldquo;will this tournament make me money?&rdquo;</em> was
               a Notion doc and a prayer.
             </p>
           </div>
