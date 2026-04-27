@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,15 +40,20 @@ const SPORTS = [
   "Other",
 ];
 
-export default function ProfilePage() {
+function ProfileForm() {
   const { user, setUser } = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Pre-fill from Google OAuth redirect params (new users only)
+  const googleEmail = searchParams.get("email") ?? "";
+  const googleName = searchParams.get("name") ?? "";
+
   const [form, setForm] = useState({
-    email: user?.email ?? "",
-    name: user?.name ?? "",
+    email: user?.email ?? googleEmail,
+    name: user?.name ?? googleName,
     home_country: user?.home_country ?? "",
     home_currency: user?.home_currency ?? "USD",
     sport: user?.sport ?? "tennis",
@@ -84,12 +89,12 @@ export default function ProfilePage() {
   return (
     <AppShell>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <h1 className="text-lg font-semibold text-white">
+        <h1 className="font-serif text-xl font-semibold text-foreground">
           {user ? "Edit Profile" : "Set Up Your Profile"}
         </h1>
 
         <Card>
-          <h2 className="mb-4 text-sm font-medium text-zinc-300">Personal Details</h2>
+          <h2 className="mb-4 font-mono text-xs font-medium uppercase tracking-widest text-muted-foreground">Personal Details</h2>
           <div className="space-y-4">
             <FieldGroup>
               <Label htmlFor="email">Email</Label>
@@ -140,7 +145,7 @@ export default function ProfilePage() {
         </Card>
 
         <Card>
-          <h2 className="mb-4 text-sm font-medium text-zinc-300">Financial Snapshot</h2>
+          <h2 className="mb-4 font-mono text-xs font-medium uppercase tracking-widest text-muted-foreground">Financial Snapshot</h2>
           <div className="space-y-4">
             <FieldGroup>
               <Label htmlFor="income">Monthly Income / Salary ({form.home_currency})</Label>
@@ -179,7 +184,7 @@ export default function ProfilePage() {
         </Card>
 
         {error && (
-          <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+          <p className="rounded-xl border border-loss/20 bg-loss-soft px-4 py-3 text-sm text-loss">
             {error}
           </p>
         )}
@@ -190,5 +195,13 @@ export default function ProfilePage() {
         </Button>
       </form>
     </AppShell>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <Suspense>
+      <ProfileForm />
+    </Suspense>
   );
 }

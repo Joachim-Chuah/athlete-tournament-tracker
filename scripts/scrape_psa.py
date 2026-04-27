@@ -60,17 +60,32 @@ COUNTRY_NAMES = {
 }
 
 
+def actual_draw_size(comp: dict) -> int:
+    """Use confirmed player count from the draw, not the capacity slot count.
+    The PSA API's draws[].size is the max capacity; actual entries are often lower."""
+    draws = comp.get("draws") or []
+    if not draws:
+        return 16
+    players = draws[0].get("players") or []
+    if players:
+        return len(players)
+    capacity = draws[0].get("size", 16)
+    return min(capacity, 32)
+
+
 def estimate_prize_rounds(prize_total: float, draw_size: int, tier: str) -> dict:
+    """Tier takes priority over draw size so a Silver event with 32 capacity
+    slots doesn't get Gold percentages."""
     if not prize_total or prize_total <= 0:
         return {}
     p = lambda pct: round(prize_total * pct)
-    if draw_size >= 64 or tier in ("Platinum", "Finals"):
+    if tier in ("Platinum", "Finals") or draw_size >= 64:
         return {"r1": p(0.008), "r2": p(0.015), "r3": p(0.028), "qf": p(0.055), "sf": p(0.105), "f": p(0.20), "w": p(0.35)}
-    if draw_size >= 32 or tier == "Gold":
+    if tier == "Gold" or draw_size >= 32:
         return {"r1": p(0.015), "r2": p(0.03), "qf": p(0.065), "sf": p(0.115), "f": p(0.22), "w": p(0.40)}
-    if draw_size >= 16 or tier == "Silver":
-        return {"r1": p(0.03), "qf": p(0.075), "sf": p(0.13), "f": p(0.25), "w": p(0.44)}
-    return {"qf": p(0.05), "sf": p(0.15), "f": p(0.27), "w": p(0.50)}
+    if tier == "Silver" or draw_size >= 16:
+        return {"r1": p(0.04), "qf": p(0.085), "sf": p(0.14), "f": p(0.26), "w": p(0.44)}
+    return {"qf": p(0.06), "sf": p(0.16), "f": p(0.29), "w": p(0.50)}
 
 
 def parse_location(loc: str) -> tuple[str, str, str]:
@@ -150,8 +165,7 @@ def scrape():
                 tier = LEVEL_TIERS.get(level_id, "Open")
                 tour_level = LEVEL_TOUR.get(level_id, "World Tour")
                 prize_total = comp.get("prize_total") or 0
-                draws = comp.get("draws") or []
-                draw_size = draws[0].get("size", 32) if draws else 32
+                draw_size = actual_draw_size(comp)
                 gender = comp.get("name") or "Open"
 
                 duration = max(1, (end_date - start_date).days) if end_date else 7

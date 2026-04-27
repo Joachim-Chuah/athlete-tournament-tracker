@@ -55,7 +55,7 @@ function StepIndicator({ current, total }: { current: number; total: number }) {
   return (
     <div className="flex items-center gap-2 mb-6">
       {Array.from({ length: total }).map((_, i) => (
-        <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= current ? "bg-emerald-500" : "bg-zinc-800"}`} />
+        <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= current ? "bg-primary" : "bg-secondary"}`} />
       ))}
     </div>
   );
@@ -113,7 +113,7 @@ function Step1({ form, set }: StepProps) {
 function Step2({ form, set }: StepProps) {
   return (
     <div className="space-y-3">
-      <p className="text-sm text-zinc-400 mb-4">Enter prize money in {form.currency || "tournament currency"}. Leave blank for rounds that don&apos;t apply.</p>
+      <p className="text-sm text-muted-foreground mb-4">Enter prize money in {form.currency || "tournament currency"}. Leave blank for rounds that don&apos;t apply.</p>
       {ROUND_LABELS.map(([key, label]) => (
         <FieldGroup key={key}>
           <Label>{label}</Label>
@@ -145,14 +145,14 @@ function Step3({ form, set }: StepProps) {
 function Step4({ form, set }: StepProps) {
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3">
-        <span className="text-sm text-zinc-200">I am subsidized for this tournament</span>
+      <div className="flex items-center justify-between rounded-xl border border-border bg-secondary px-4 py-3">
+        <span className="text-sm text-foreground">I am subsidized for this tournament</span>
         <button
           type="button"
           onClick={() => set("subsidized", !form.subsidized)}
-          className={`relative h-6 w-11 rounded-full transition-colors ${form.subsidized ? "bg-emerald-500" : "bg-zinc-600"}`}
+          className={`relative h-6 w-11 rounded-full transition-colors ${form.subsidized ? "bg-primary" : "bg-border"}`}
         >
-          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${form.subsidized ? "translate-x-5" : "translate-x-0.5"}`} />
+          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-background shadow transition-transform ${form.subsidized ? "translate-x-5" : "translate-x-0.5"}`} />
         </button>
       </div>
 
@@ -307,8 +307,8 @@ export default function NewTournamentPage() {
     <AppShell>
       <div className="space-y-4">
         <div>
-          <h1 className="text-lg font-semibold text-white">New Tournament</h1>
-          <p className="text-sm text-zinc-500 mt-0.5">Step {step + 1} of {STEPS.length} — {STEPS[step]}</p>
+          <h1 className="font-serif text-xl font-semibold text-foreground">New Tournament</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Step {step + 1} of {STEPS.length} — {STEPS[step]}</p>
         </div>
 
         <StepIndicator current={step} total={STEPS.length} />
@@ -325,7 +325,7 @@ export default function NewTournamentPage() {
         </Card>
 
         {error && (
-          <p className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">{error}</p>
+          <p className="rounded-xl border border-loss/20 bg-loss-soft px-4 py-3 text-sm text-loss">{error}</p>
         )}
 
         <div className="flex gap-3">

@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card, CardTitle, CardValue } from "@/components/ui/card";
@@ -13,13 +11,13 @@ import { useUser } from "@/context/user";
 import Link from "next/link";
 import { TrendingUp, TrendingDown, Plus, AlertTriangle, Loader2, ChevronRight, MapPin, Calendar } from "lucide-react";
 
-function StatCard({ label, value, sub, color = "white" }: { label: string; value: string; sub?: string; color?: string }) {
-  const colorClass = color === "green" ? "text-emerald-400" : color === "red" ? "text-red-400" : "text-white";
+function StatCard({ label, value, sub, color = "default" }: { label: string; value: string; sub?: string; color?: string }) {
+  const colorClass = color === "green" ? "text-profit" : color === "red" ? "text-loss" : "text-foreground";
   return (
     <Card className="flex flex-col gap-1">
       <CardTitle>{label}</CardTitle>
       <CardValue className={`mt-2 ${colorClass}`}>{value}</CardValue>
-      {sub && <p className="text-xs text-zinc-600 mt-1">{sub}</p>}
+      {sub && <p className="text-xs text-muted-foreground mt-1">{sub}</p>}
     </Card>
   );
 }
@@ -29,13 +27,13 @@ function RunwayBanner({ savings, avgSpend, currency }: { savings: number; avgSpe
 
   if (runway === null) {
     return (
-      <div className="flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15">
-          <TrendingUp className="h-4 w-4 text-emerald-400" />
+      <div className="flex items-center gap-3 rounded-xl border border-profit/20 bg-profit-soft p-4">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-profit/15">
+          <TrendingUp className="h-4 w-4 text-profit" />
         </div>
         <div>
-          <p className="text-sm font-medium text-emerald-300">Profitable on average</p>
-          <p className="text-xs text-zinc-500 mt-0.5">Your tournaments are generating positive returns.</p>
+          <p className="text-sm font-medium text-profit">Profitable on average</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Your tournaments are generating positive returns.</p>
         </div>
       </div>
     );
@@ -43,21 +41,17 @@ function RunwayBanner({ savings, avgSpend, currency }: { savings: number; avgSpe
 
   const warn = runway <= 3;
   const Icon = warn ? AlertTriangle : TrendingDown;
-  const borderColor = warn ? "border-amber-500/20 bg-amber-500/5" : "border-zinc-700/60 bg-zinc-900/40";
-  const iconBg = warn ? "bg-amber-500/15" : "bg-zinc-800";
-  const iconColor = warn ? "text-amber-400" : "text-zinc-400";
-  const textColor = warn ? "text-amber-300" : "text-zinc-200";
 
   return (
-    <div className={`flex items-center gap-3 rounded-xl border p-4 ${borderColor}`}>
-      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${iconBg}`}>
-        <Icon className={`h-4 w-4 ${iconColor}`} />
+    <div className={`flex items-center gap-3 rounded-xl border p-4 ${warn ? "border-warning/20 bg-warning/5" : "border-border bg-secondary/50"}`}>
+      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${warn ? "bg-warning/15" : "bg-secondary"}`}>
+        <Icon className={`h-4 w-4 ${warn ? "text-warning" : "text-muted-foreground"}`} />
       </div>
       <div className="flex-1">
-        <p className={`text-sm font-medium ${textColor}`}>
+        <p className={`text-sm font-medium ${warn ? "text-warning" : "text-foreground"}`}>
           Savings runway: <strong>{runway} tournament{runway !== 1 ? "s" : ""}</strong>
         </p>
-        <p className="text-xs text-zinc-500 mt-0.5">
+        <p className="text-xs text-muted-foreground mt-0.5">
           Avg. loss of {formatMoney(avgSpend, currency)}/tournament · {formatMoney(savings, currency)} remaining
         </p>
       </div>
@@ -79,14 +73,14 @@ function ScenarioBar({ worst, realistic, best, currency }: { worst: number; real
         const positive = value >= 0;
         return (
           <div key={label} className="flex items-center gap-3">
-            <span className="w-14 text-right text-xs text-zinc-500 shrink-0">{label}</span>
-            <div className="flex-1 h-1.5 rounded-full bg-zinc-800 relative overflow-hidden">
+            <span className="w-14 text-right text-xs text-muted-foreground shrink-0">{label}</span>
+            <div className="flex-1 h-1.5 rounded-full bg-secondary relative overflow-hidden">
               <div
-                className={`absolute top-0 h-full rounded-full ${positive ? "bg-emerald-500 left-0" : "bg-red-500 right-0"}`}
+                className={`absolute top-0 h-full rounded-full ${positive ? "bg-profit left-0" : "bg-loss right-0"}`}
                 style={{ width: `${toWidth(value)}%` }}
               />
             </div>
-            <span className={`w-20 text-right text-xs font-medium tabular-nums shrink-0 ${positive ? "text-emerald-400" : "text-red-400"}`}>
+            <span className={`w-20 text-right text-xs font-medium tabular shrink-0 ${positive ? "text-profit" : "text-loss"}`}>
               {positive ? "+" : ""}{formatMoney(value, currency)}
             </span>
           </div>
@@ -105,25 +99,25 @@ function TournamentCard({ t, homeCurrency }: { t: TournamentWithPnL; homeCurrenc
 
   return (
     <Link href={`/tournaments/${t.id}`}>
-      <Card className="group cursor-pointer transition-all duration-200 hover:border-zinc-600/60 hover:bg-zinc-900/60">
+      <Card className="group cursor-pointer transition-colors hover:bg-secondary/40">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-white truncate">{t.name}</h3>
+              <h3 className="font-semibold text-foreground truncate">{t.name}</h3>
               <Badge variant={profitable ? "profit" : "loss"}>
                 {realistic ? `${realistic.net_result >= 0 ? "+" : ""}${formatMoney(realistic.net_result, homeCurrency)}` : "—"}
               </Badge>
             </div>
             <div className="flex items-center gap-3 mt-1">
-              <span className="flex items-center gap-1 text-xs text-zinc-500">
+              <span className="flex items-center gap-1 text-xs text-muted-foreground">
                 <MapPin className="h-3 w-3" />{t.location}
               </span>
-              <span className="flex items-center gap-1 text-xs text-zinc-500">
+              <span className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Calendar className="h-3 w-3" />{formatDate(t.start_date)}
               </span>
             </div>
           </div>
-          <ChevronRight className="h-4 w-4 shrink-0 text-zinc-600 group-hover:text-zinc-400 transition-colors mt-0.5" />
+          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors mt-0.5" />
         </div>
 
         <ScenarioBar
@@ -134,8 +128,8 @@ function TournamentCard({ t, homeCurrency }: { t: TournamentWithPnL; homeCurrenc
         />
 
         {break_even_round && (
-          <p className="mt-3 text-xs text-zinc-600">
-            Break-even at <span className="font-medium uppercase text-zinc-400">{break_even_round}</span>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Break-even at <span className="font-medium uppercase text-foreground">{break_even_round}</span>
           </p>
         )}
       </Card>
@@ -145,11 +139,6 @@ function TournamentCard({ t, homeCurrency }: { t: TournamentWithPnL; homeCurrenc
 
 export default function DashboardPage() {
   const { user } = useUser();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!user) router.replace("/profile");
-  }, [user, router]);
 
   const { data: tournaments = [], isLoading } = useQuery({
     queryKey: ["tournaments", user?.id],
@@ -161,7 +150,7 @@ export default function DashboardPage() {
     return (
       <AppShell>
         <div className="flex h-64 items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-emerald-500/50" />
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
       </AppShell>
     );
@@ -190,9 +179,9 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-xs uppercase tracking-widest text-zinc-500">Welcome back</p>
-            <h1 className="mt-1 text-2xl font-bold text-white">{user.name}</h1>
-            <p className="text-sm text-zinc-500 mt-0.5">{currentYear} Season Overview</p>
+            <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">Welcome back</p>
+            <h1 className="mt-1 font-serif text-2xl font-bold text-foreground">{user.name}</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">{currentYear} Season Overview</p>
           </div>
           <Link href="/tournaments/new">
             <Button size="sm">
@@ -224,21 +213,21 @@ export default function DashboardPage() {
         {/* Tournament list */}
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-zinc-400">All Tournaments</h2>
-            <span className="text-xs text-zinc-600">{tournaments.length} total</span>
+            <h2 className="font-mono text-xs font-semibold uppercase tracking-widest text-muted-foreground">All Tournaments</h2>
+            <span className="text-xs text-muted-foreground">{tournaments.length} total</span>
           </div>
 
           {isLoading ? (
             <div className="flex h-40 items-center justify-center">
-              <Loader2 className="h-5 w-5 animate-spin text-emerald-500/50" />
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
             </div>
           ) : tournaments.length === 0 ? (
             <Card className="py-16 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-800 mx-auto mb-4">
-                <Plus className="h-5 w-5 text-zinc-500" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary mx-auto mb-4">
+                <Plus className="h-5 w-5 text-muted-foreground" />
               </div>
-              <p className="text-sm font-medium text-zinc-300">No tournaments yet</p>
-              <p className="text-xs text-zinc-600 mt-1 mb-4">Add your first tournament to see your P&L projection.</p>
+              <p className="text-sm font-medium text-foreground">No tournaments yet</p>
+              <p className="text-xs text-muted-foreground mt-1 mb-4">Add your first tournament to see your P&L projection.</p>
               <Link href="/tournaments/new">
                 <Button size="sm">Add Tournament</Button>
               </Link>

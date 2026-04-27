@@ -28,23 +28,23 @@ function ScenarioRow({
   const labels: Record<string, string> = { worst: "Worst Case", realistic: "Realistic", best: "Best Case" };
 
   return (
-    <div className={`rounded-xl p-4 border ${s.profitable ? "border-emerald-500/20 bg-emerald-500/5" : "border-red-500/20 bg-red-500/5"}`}>
+    <div className={`rounded-xl p-4 border ${s.profitable ? "border-profit/20 bg-profit-soft" : "border-loss/20 bg-loss-soft"}`}>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <Icon className={`h-4 w-4 ${s.profitable ? "text-emerald-400" : "text-red-400"}`} />
-          <span className="text-sm font-medium text-white">{labels[s.scenario]}</span>
+          <Icon className={`h-4 w-4 ${s.profitable ? "text-profit" : "text-loss"}`} />
+          <span className="text-sm font-medium text-foreground">{labels[s.scenario]}</span>
           {isBreakEven && <Badge variant="warning">Break-even</Badge>}
         </div>
-        <span className="text-xs uppercase text-zinc-500">{s.round}</span>
+        <span className="font-mono text-xs uppercase text-muted-foreground">{s.round}</span>
       </div>
       <div className="flex items-end justify-between mt-1">
         <div>
-          <p className="text-xs text-zinc-500">Prize ({currency})</p>
-          <p className="text-sm text-zinc-300">{formatMoney(s.prize_money, currency)}</p>
+          <p className="text-xs text-muted-foreground">Prize ({currency})</p>
+          <p className="text-sm text-foreground">{formatMoney(s.prize_money, currency)}</p>
         </div>
         <div className="text-right">
-          <p className="text-xs text-zinc-500">Net ({homeCurrency})</p>
-          <p className={`text-xl font-bold ${s.profitable ? "text-emerald-400" : "text-red-400"}`}>
+          <p className="text-xs text-muted-foreground">Net ({homeCurrency})</p>
+          <p className={`font-mono text-xl font-bold tabular ${s.profitable ? "text-profit" : "text-loss"}`}>
             {s.net_result >= 0 ? "+" : ""}{formatMoney(s.net_result, homeCurrency)}
           </p>
         </div>
@@ -76,7 +76,7 @@ export default function TournamentDetailPage({ params }: { params: Promise<{ id:
     return (
       <AppShell>
         <div className="flex h-48 items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-zinc-500" />
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
       </AppShell>
     );
@@ -101,17 +101,17 @@ export default function TournamentDetailPage({ params }: { params: Promise<{ id:
     <AppShell>
       <div className="space-y-5">
         <div>
-          <h1 className="text-lg font-semibold text-white">{tournament.name}</h1>
-          <p className="text-sm text-zinc-500">
+          <h1 className="font-serif text-xl font-semibold text-foreground">{tournament.name}</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
             {tournament.location} · {formatDate(tournament.start_date)} – {formatDate(tournament.end_date)}
           </p>
         </div>
 
         <section>
-          <h2 className="mb-3 text-sm font-medium text-zinc-400">P&L Scenarios</h2>
+          <h2 className="mb-3 font-mono text-xs font-medium uppercase tracking-widest text-muted-foreground">P&L Scenarios</h2>
           {pnl.scenarios.length === 0 ? (
             <Card className="text-center py-8">
-              <p className="text-sm text-zinc-500">No prize rounds entered — edit the tournament to add them.</p>
+              <p className="text-sm text-muted-foreground">No prize rounds entered — edit the tournament to add them.</p>
             </Card>
           ) : (
             <div className="space-y-3">
@@ -127,8 +127,8 @@ export default function TournamentDetailPage({ params }: { params: Promise<{ id:
             </div>
           )}
           {pnl.break_even_round && (
-            <p className="mt-3 text-xs text-zinc-500">
-              Break-even: reach <span className="font-medium uppercase text-zinc-300">{pnl.break_even_round}</span> to cover all costs
+            <p className="mt-3 text-xs text-muted-foreground">
+              Break-even: reach <span className="font-medium uppercase text-foreground">{pnl.break_even_round}</span> to cover all costs
             </p>
           )}
         </section>
@@ -136,25 +136,25 @@ export default function TournamentDetailPage({ params }: { params: Promise<{ id:
         <Card>
           <CardHeader>
             <CardTitle>Expense Breakdown</CardTitle>
-            <span className="text-sm font-semibold text-white">{formatMoney(pnl.total_expenses, homeCurrency)}</span>
+            <span className="font-mono text-sm font-semibold text-foreground tabular">{formatMoney(pnl.total_expenses, homeCurrency)}</span>
           </CardHeader>
           <div className="space-y-2">
             {expenses.map(({ label, value }) => (
               <div key={label} className="flex items-center justify-between text-sm">
-                <span className="text-zinc-400">{label}</span>
-                <span className="text-white">{formatMoney(value, homeCurrency)}</span>
+                <span className="text-muted-foreground">{label}</span>
+                <span className="font-mono text-foreground tabular">{formatMoney(value, homeCurrency)}</span>
               </div>
             ))}
             {tournament.sponsorship_allocated > 0 && (
-              <div className="flex items-center justify-between text-sm border-t border-zinc-800 pt-2 mt-2">
-                <span className="text-emerald-400">Sponsorship income</span>
-                <span className="text-emerald-400">+{formatMoney(tournament.sponsorship_allocated, homeCurrency)}</span>
+              <div className="flex items-center justify-between text-sm border-t border-border pt-2 mt-2">
+                <span className="text-profit">Sponsorship income</span>
+                <span className="font-mono text-profit tabular">+{formatMoney(tournament.sponsorship_allocated, homeCurrency)}</span>
               </div>
             )}
             {tournament.subsidy_amount > 0 && (
               <div className="flex items-center justify-between text-sm">
-                <span className="text-emerald-400">Subsidy ({tournament.subsidy_covers?.replace("_", " ")})</span>
-                <span className="text-emerald-400">+{formatMoney(tournament.subsidy_amount, homeCurrency)}</span>
+                <span className="text-profit">Subsidy ({tournament.subsidy_covers?.replace("_", " ")})</span>
+                <span className="font-mono text-profit tabular">+{formatMoney(tournament.subsidy_amount, homeCurrency)}</span>
               </div>
             )}
           </div>
