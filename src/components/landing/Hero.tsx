@@ -16,7 +16,7 @@ const Hero = () => {
             Built by an athlete, for athletes
           </div>
 
-          <h1 className="text-balance font-serif text-5xl leading-[1.05] tracking-tight md:text-7xl">
+          <h1 className="text-balance font-bold text-5xl leading-[1.05] tracking-tight md:text-7xl">
             Know before you go.{" "}
             <span className="italic text-muted-foreground">Profit from every tournament.</span>
           </h1>
