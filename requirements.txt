@@ -4,6 +4,7 @@ sqlalchemy>=2.0.40
 psycopg[binary]>=3.2.0
 python-dotenv==1.0.1
 requests==2.32.3
+pyjwt[crypto]>=2.8.0
 gunicorn==23.0.0
 pytest==8.3.4
 pytest-cov==6.1.0

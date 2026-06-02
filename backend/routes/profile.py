@@ -1,6 +1,4 @@
-import uuid
-from flask import Blueprint, request, jsonify
-from sqlalchemy.exc import IntegrityError
+from flask import Blueprint, request, jsonify, g
 from backend.database import Session
 from backend.models import User
 
@@ -9,12 +7,8 @@ bp = Blueprint("profile", __name__)
 
 @bp.get("/api/profile")
 def get_profile():
-    email = request.args.get("email")
-    if not email:
-        return jsonify({"error": "email required"}), 400
-
     with Session() as db:
-        user = db.query(User).filter_by(email=email).first()
+        user = db.query(User).filter_by(id=g.user_id).first()
         return jsonify(user.to_dict() if user else None)
 
 
@@ -22,7 +16,8 @@ def get_profile():
 def save_profile():
     body = request.get_json(silent=True) or {}
 
-    required = ["email", "name", "home_country", "home_currency", "sport"]
+    # Identity comes from the verified token, never the client.
+    required = ["name", "home_country", "home_currency", "sport"]
     for field in required:
         if not body.get(field):
             return jsonify({"error": f"{field} is required"}), 422
@@ -31,7 +26,7 @@ def save_profile():
         return jsonify({"error": "home_currency must be a 3-letter code"}), 422
 
     with Session() as db:
-        user = db.query(User).filter_by(email=body["email"]).first()
+        user = db.query(User).filter_by(id=g.user_id).first()
         if user:
             user.name = body["name"]
             user.home_country = body["home_country"]
@@ -41,9 +36,13 @@ def save_profile():
             user.savings_balance = float(body.get("savings_balance") or 0)
             user.monthly_sponsorship = float(body.get("monthly_sponsorship") or 0)
         else:
+            # email is a NOT NULL column but isn't a guaranteed JWT claim — bail
+            # out cleanly rather than letting the insert raise an IntegrityError.
+            if not g.email:
+                return jsonify({"error": "token is missing an email claim"}), 422
             user = User(
-                id=str(uuid.uuid4()),
-                email=body["email"],
+                id=g.user_id,
+                email=g.email,
                 name=body["name"],
                 home_country=body["home_country"],
                 home_currency=body["home_currency"],

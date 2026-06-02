@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from backend.database import Session
 from backend.models import User, Tournament
 from backend.utils.pnl import calculate_pnl
@@ -48,9 +48,7 @@ def _with_pnl(t: Tournament, home_currency: str) -> dict:
 
 @bp.get("/api/tournaments")
 def list_tournaments():
-    user_id = request.args.get("user_id")
-    if not user_id:
-        return jsonify({"error": "user_id required"}), 400
+    user_id = g.user_id
 
     with Session() as db:
         user = db.query(User).filter_by(id=user_id).first()
@@ -69,7 +67,7 @@ def list_tournaments():
 def create_tournament():
     body = request.get_json(silent=True) or {}
 
-    required = ["user_id", "name", "location", "country", "currency", "start_date", "end_date", "duration_days"]
+    required = ["name", "location", "country", "currency", "start_date", "end_date", "duration_days"]
     for field in required:
         if body.get(field) is None:
             return jsonify({"error": f"{field} is required"}), 422
@@ -79,15 +77,16 @@ def create_tournament():
         return jsonify({"error": f"invalid subsidy_covers: {subsidy_covers}"}), 422
 
     with Session() as db:
-        user = db.query(User).filter_by(id=body["user_id"]).first()
+        user = db.query(User).filter_by(id=g.user_id).first()
         if not user:
-            return jsonify({"error": "user not found"}), 404
+            # Authenticated, but profile setup hasn't happened yet.
+            return jsonify({"error": "complete your profile before adding tournaments"}), 409
 
         converted = _to_home_currency(body, user.home_currency)
 
         t = Tournament(
             id=str(uuid.uuid4()),
-            user_id=body["user_id"],
+            user_id=g.user_id,
             name=converted["name"],
             location=converted["location"],
             country=converted["country"],
@@ -116,7 +115,7 @@ def create_tournament():
 def get_tournament(id: str):
     with Session() as db:
         t = db.query(Tournament).filter_by(id=id).first()
-        if not t:
+        if not t or t.user_id != g.user_id:
             return jsonify({"error": "not found"}), 404
         user = db.query(User).filter_by(id=t.user_id).first()
         home_currency = user.home_currency if user else "USD"
@@ -133,7 +132,7 @@ def update_tournament(id: str):
 
     with Session() as db:
         t = db.query(Tournament).filter_by(id=id).first()
-        if not t:
+        if not t or t.user_id != g.user_id:
             return jsonify({"error": "not found"}), 404
 
         updatable = [
@@ -163,7 +162,7 @@ def update_tournament(id: str):
 def delete_tournament(id: str):
     with Session() as db:
         t = db.query(Tournament).filter_by(id=id).first()
-        if not t:
+        if not t or t.user_id != g.user_id:
             return jsonify({"error": "not found"}), 404
         db.delete(t)
         db.commit()
