@@ -9,9 +9,9 @@ const Hero = () => {
       <div className="relative mx-auto max-w-6xl px-6 pt-20 pb-24 md:pt-28 md:pb-32">
         <div className="mx-auto max-w-3xl text-center">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-1 text-xs text-muted-foreground backdrop-blur-sm">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-profit opacity-60" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-profit" />
+            <span className="relative flex size-1.5">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-profit opacity-60" />
+              <span className="relative inline-flex size-1.5 rounded-full bg-profit" />
             </span>
             Built by an athlete, for athletes
           </div>
@@ -32,7 +32,7 @@ const Hero = () => {
               className="inline-flex h-11 items-center gap-2 rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
             >
               Try the calculator
-              <ArrowUpRight className="h-4 w-4" />
+              <ArrowUpRight className="size-4" />
             </a>
             <a
               href="#features"
@@ -54,9 +54,9 @@ const Hero = () => {
             {/* Window chrome */}
             <div className="flex items-center justify-between border-b border-border bg-secondary/50 px-5 py-3">
               <div className="flex items-center gap-2">
-                <div className="h-2.5 w-2.5 rounded-full bg-border" />
-                <div className="h-2.5 w-2.5 rounded-full bg-border" />
-                <div className="h-2.5 w-2.5 rounded-full bg-border" />
+                <div className="size-2.5 rounded-full bg-border" />
+                <div className="size-2.5 rounded-full bg-border" />
+                <div className="size-2.5 rounded-full bg-border" />
               </div>
               <div className="rounded-md border border-border bg-background px-3 py-0.5 font-mono text-[11px] text-muted-foreground">
                 roland-garros · jun 2026
@@ -76,7 +76,7 @@ const Hero = () => {
                   </span>
                 </div>
                 <div className="mt-4 flex items-baseline gap-1">
-                  <ArrowDown className="h-5 w-5 text-loss" />
+                  <ArrowDown className="size-5 text-loss" />
                   <span className="font-mono text-3xl font-semibold tabular text-loss">−$4,820</span>
                 </div>
                 <div className="mt-1 font-mono text-[11px] text-muted-foreground">−€4,510 EUR</div>
@@ -94,7 +94,7 @@ const Hero = () => {
                   </span>
                 </div>
                 <div className="mt-4 flex items-baseline gap-1">
-                  <ArrowUp className="h-5 w-5 text-profit" />
+                  <ArrowUp className="size-5 text-profit" />
                   <span className="font-mono text-3xl font-semibold tabular text-profit">+$118,400</span>
                 </div>
                 <div className="mt-1 font-mono text-[11px] text-muted-foreground">+€110,712 EUR</div>
@@ -111,7 +111,7 @@ const Hero = () => {
                   </span>
                 </div>
                 <div className="mt-4 flex items-baseline gap-1">
-                  <ArrowUp className="h-5 w-5 text-profit" />
+                  <ArrowUp className="size-5 text-profit" />
                   <span className="font-mono text-3xl font-semibold tabular text-profit">+$2,194,180</span>
                 </div>
                 <div className="mt-1 font-mono text-[11px] text-muted-foreground">+€2,051,300 EUR</div>
@@ -120,7 +120,7 @@ const Hero = () => {
 
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-secondary/30 px-6 py-4">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="h-1.5 w-1.5 rounded-full bg-warning" />
+                <span className="size-1.5 rounded-full bg-warning" />
                 Break-even round
                 <span className="font-mono font-medium text-foreground">R2</span>
               </div>

@@ -24,7 +24,7 @@ const CTA = () => {
               className="inline-flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-primary-foreground px-6 text-sm font-medium text-primary transition-opacity hover:opacity-90"
             >
               Get early access
-              <ArrowUpRight className="h-4 w-4" />
+              <ArrowUpRight className="size-4" />
             </button>
           </div>
 

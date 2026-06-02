@@ -5,12 +5,12 @@ const Nav = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <a href="#" className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
+        <Link href="/" className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-md bg-primary">
             <span className="font-mono text-sm font-bold text-primary-foreground">A</span>
           </div>
           <span className="text-base font-semibold tracking-tight">AthleteTracker</span>
-        </a>
+        </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
           <a href="#problem" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
@@ -36,7 +36,7 @@ const Nav = () => {
             className="inline-flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
           >
             Start free
-            <ArrowUpRight className="h-3.5 w-3.5" />
+            <ArrowUpRight className="size-3.5" />
           </Link>
         </div>
       </div>

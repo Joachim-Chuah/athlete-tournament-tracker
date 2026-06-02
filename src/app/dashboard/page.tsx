@@ -28,8 +28,8 @@ function RunwayBanner({ savings, avgSpend, currency }: { savings: number; avgSpe
   if (runway === null) {
     return (
       <div className="flex items-center gap-3 rounded-xl border border-profit/20 bg-profit-soft p-4">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-profit/15">
-          <TrendingUp className="h-4 w-4 text-profit" />
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-profit/15">
+          <TrendingUp className="size-4 text-profit" />
         </div>
         <div>
           <p className="text-sm font-medium text-profit">Profitable on average</p>
@@ -44,8 +44,8 @@ function RunwayBanner({ savings, avgSpend, currency }: { savings: number; avgSpe
 
   return (
     <div className={`flex items-center gap-3 rounded-xl border p-4 ${warn ? "border-warning/20 bg-warning/5" : "border-border bg-secondary/50"}`}>
-      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${warn ? "bg-warning/15" : "bg-secondary"}`}>
-        <Icon className={`h-4 w-4 ${warn ? "text-warning" : "text-muted-foreground"}`} />
+      <div className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${warn ? "bg-warning/15" : "bg-secondary"}`}>
+        <Icon className={`size-4 ${warn ? "text-warning" : "text-muted-foreground"}`} />
       </div>
       <div className="flex-1">
         <p className={`text-sm font-medium ${warn ? "text-warning" : "text-foreground"}`}>
@@ -110,14 +110,14 @@ function TournamentCard({ t, homeCurrency }: { t: TournamentWithPnL; homeCurrenc
             </div>
             <div className="flex items-center gap-3 mt-1">
               <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                <MapPin className="h-3 w-3" />{t.location}
+                <MapPin className="size-3" />{t.location}
               </span>
               <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Calendar className="h-3 w-3" />{formatDate(t.start_date)}
+                <Calendar className="size-3" />{formatDate(t.start_date)}
               </span>
             </div>
           </div>
-          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors mt-0.5" />
+          <ChevronRight className="size-4 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors mt-0.5" />
         </div>
 
         <ScenarioBar
@@ -150,7 +150,7 @@ export default function DashboardPage() {
     return (
       <AppShell>
         <div className="flex h-64 items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <Loader2 className="size-6 animate-spin text-muted-foreground" />
         </div>
       </AppShell>
     );
@@ -185,7 +185,7 @@ export default function DashboardPage() {
           </div>
           <Link href="/tournaments/new">
             <Button size="sm">
-              <Plus className="h-3.5 w-3.5" /> New Tournament
+              <Plus className="size-3.5" /> New Tournament
             </Button>
           </Link>
         </div>
@@ -219,12 +219,12 @@ export default function DashboardPage() {
 
           {isLoading ? (
             <div className="flex h-40 items-center justify-center">
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              <Loader2 className="size-5 animate-spin text-muted-foreground" />
             </div>
           ) : tournaments.length === 0 ? (
             <Card className="py-16 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary mx-auto mb-4">
-                <Plus className="h-5 w-5 text-muted-foreground" />
+              <div className="flex size-12 items-center justify-center rounded-xl bg-secondary mx-auto mb-4">
+                <Plus className="size-5 text-muted-foreground" />
               </div>
               <p className="text-sm font-medium text-foreground">No tournaments yet</p>
               <p className="text-xs text-muted-foreground mt-1 mb-4">Add your first tournament to see your P&L projection.</p>

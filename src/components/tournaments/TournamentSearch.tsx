@@ -68,21 +68,21 @@ function ResultCard({ t, onSelect }: { t: SeedTournament; onSelect: () => void }
 
         {purse > 0 && (
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Trophy className="h-3 w-3" />
+            <Trophy className="size-3" />
             {formatMoney(purse, t.currency)} purse
           </span>
         )}
 
         {t.location && (
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
-            <MapPin className="h-3 w-3" />
+            <MapPin className="size-3" />
             {t.location}
           </span>
         )}
 
         {dateRange && (
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Calendar className="h-3 w-3" />
+            <Calendar className="size-3" />
             {dateRange}
           </span>
         )}
@@ -139,12 +139,12 @@ export function TournamentSearch({ onSelect, sport }: Props) {
   return (
     <div ref={containerRef} className="relative mb-6">
       <div className="flex items-center gap-2 mb-2">
-        <Zap className="h-3.5 w-3.5 text-profit" />
+        <Zap className="size-3.5 text-profit" />
         <span className="font-mono text-xs uppercase tracking-widest text-profit font-medium">Quick Fill</span>
       </div>
 
       <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
         <input
           type="text"
           placeholder="Search by name, city, country, or tier…"
@@ -159,7 +159,7 @@ export function TournamentSearch({ onSelect, sport }: Props) {
           )}
         />
         {loading && (
-          <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+          <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 size-4 animate-spin text-muted-foreground" />
         )}
       </div>
 
@@ -186,7 +186,7 @@ export function TournamentSearch({ onSelect, sport }: Props) {
 
       {selected && (
         <p className="mt-2 flex items-center gap-1.5 text-xs text-profit">
-          <Zap className="h-3 w-3" />
+          <Zap className="size-3" />
           Form auto-filled — review and adjust any values before continuing.
         </p>
       )}

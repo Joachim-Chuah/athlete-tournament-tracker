@@ -152,7 +152,7 @@ function Step4({ form, set }: StepProps) {
           onClick={() => set("subsidized", !form.subsidized)}
           className={`relative h-6 w-11 rounded-full transition-colors ${form.subsidized ? "bg-primary" : "bg-border"}`}
         >
-          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-background shadow transition-transform ${form.subsidized ? "translate-x-5" : "translate-x-0.5"}`} />
+          <span className={`absolute top-0.5 size-5 rounded-full bg-background shadow transition-transform ${form.subsidized ? "translate-x-5" : "translate-x-0.5"}`} />
         </button>
       </div>
 
@@ -331,16 +331,16 @@ export default function NewTournamentPage() {
         <div className="flex gap-3">
           {step > 0 && (
             <Button variant="secondary" className="flex-1" onClick={() => setStep(step - 1)} type="button">
-              <ChevronLeft className="h-4 w-4" /> Back
+              <ChevronLeft className="size-4" /> Back
             </Button>
           )}
           {step < STEPS.length - 1 ? (
             <Button className="flex-1" onClick={() => setStep(step + 1)} type="button">
-              Next <ChevronRight className="h-4 w-4" />
+              Next <ChevronRight className="size-4" />
             </Button>
           ) : (
             <Button className="flex-1" onClick={handleSubmit} disabled={submitting} type="button">
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              {submitting ? <Loader2 className="size-4 animate-spin" /> : null}
               {submitting ? "Saving…" : "Generate P&L"}
             </Button>
           )}
