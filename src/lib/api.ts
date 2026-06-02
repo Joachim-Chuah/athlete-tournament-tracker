@@ -59,6 +59,8 @@ export const api = {
       request<TournamentWithPnL>(`/api/tournaments/${id}`),
     create: (data: Omit<Tournament, "id" | "created_at">) =>
       request<TournamentWithPnL>("/api/tournaments", { method: "POST", body: JSON.stringify(data) }),
+    previewPnl: (data: Partial<Tournament>) =>
+      request<PnLResult>("/api/tournaments/pnl-preview", { method: "POST", body: JSON.stringify(data) }),
     update: (id: string, data: Partial<Tournament>) =>
       request<TournamentWithPnL>(`/api/tournaments/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
     delete: (id: string) =>

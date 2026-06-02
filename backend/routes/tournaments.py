@@ -9,6 +9,87 @@ from backend.utils.currency import fetch_rates, convert
 bp = Blueprint("tournaments", __name__)
 
 VALID_SUBSIDY = {"flights", "accommodation", "full_expenses", "flat_stipend"}
+VALID_PRIZE_ROUNDS = {"r1", "r2", "r3", "qf", "sf", "f", "w"}
+MONEY_FIELDS = {
+    "entry_fee",
+    "flight_cost",
+    "accommodation_total",
+    "daily_spending_cap",
+    "coaching_cost",
+    "misc_cost",
+    "subsidy_amount",
+    "sponsorship_allocated",
+}
+PASSTHROUGH_FIELDS = {
+    "name",
+    "location",
+    "country",
+    "currency",
+    "subsidy_by",
+    "subsidy_covers",
+}
+
+
+class TournamentFieldError(ValueError):
+    pass
+
+
+def _coerce_non_negative_float(field: str, value) -> float:
+    try:
+        coerced = float(value or 0)
+    except (TypeError, ValueError) as exc:
+        raise TournamentFieldError(f"{field} must be a number") from exc
+
+    if coerced < 0:
+        raise TournamentFieldError(f"{field} must be greater than or equal to 0")
+    return coerced
+
+
+def _coerce_prize_rounds(value) -> dict:
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise TournamentFieldError("prize_rounds must be an object")
+
+    coerced = {}
+    for round_key, amount in value.items():
+        if round_key not in VALID_PRIZE_ROUNDS:
+            raise TournamentFieldError(f"invalid prize round: {round_key}")
+        if amount is not None:
+            coerced[round_key] = _coerce_non_negative_float(f"prize_rounds.{round_key}", amount)
+    return coerced
+
+
+def coerce_tournament_fields(body: dict) -> dict:
+    coerced = {}
+
+    for field in MONEY_FIELDS:
+        if field in body:
+            coerced[field] = _coerce_non_negative_float(field, body[field])
+
+    if "duration_days" in body:
+        try:
+            coerced["duration_days"] = int(body["duration_days"] or 0)
+        except (TypeError, ValueError) as exc:
+            raise TournamentFieldError("duration_days must be an integer") from exc
+        if coerced["duration_days"] < 1:
+            raise TournamentFieldError("duration_days must be greater than or equal to 1")
+
+    for field in PASSTHROUGH_FIELDS:
+        if field in body:
+            coerced[field] = body[field]
+
+    if "prize_rounds" in body:
+        coerced["prize_rounds"] = _coerce_prize_rounds(body["prize_rounds"])
+
+    return coerced
+
+
+def parse_tournament_date(field: str, value) -> datetime:
+    try:
+        return datetime.fromisoformat(value).replace(tzinfo=timezone.utc)
+    except (TypeError, ValueError) as exc:
+        raise TournamentFieldError(f"{field} must be a valid ISO date") from exc
 
 
 def _to_home_currency(data: dict, home_currency: str) -> dict:
@@ -111,6 +192,22 @@ def create_tournament():
         return jsonify(_with_pnl(t, user.home_currency)), 201
 
 
+@bp.post("/api/tournaments/pnl-preview")
+def preview_tournament_pnl():
+    body = request.get_json(silent=True) or {}
+
+    subsidy_covers = body.get("subsidy_covers")
+    if subsidy_covers and subsidy_covers not in VALID_SUBSIDY:
+        return jsonify({"error": f"invalid subsidy_covers: {subsidy_covers}"}), 422
+
+    try:
+        coerced = coerce_tournament_fields(body)
+    except TournamentFieldError as exc:
+        return jsonify({"error": str(exc)}), 422
+
+    return jsonify(calculate_pnl(coerced))
+
+
 @bp.get("/api/tournaments/<id>")
 def get_tournament(id: str):
     with Session() as db:
@@ -130,25 +227,27 @@ def update_tournament(id: str):
     if subsidy_covers and subsidy_covers not in VALID_SUBSIDY:
         return jsonify({"error": f"invalid subsidy_covers: {subsidy_covers}"}), 422
 
+    try:
+        coerced = coerce_tournament_fields(body)
+    except TournamentFieldError as exc:
+        return jsonify({"error": str(exc)}), 422
+
     with Session() as db:
         t = db.query(Tournament).filter_by(id=id).first()
         if not t or t.user_id != g.user_id:
             return jsonify({"error": "not found"}), 404
 
-        updatable = [
-            "name", "location", "country", "currency", "duration_days",
-            "entry_fee", "flight_cost", "accommodation_total", "daily_spending_cap",
-            "coaching_cost", "misc_cost", "subsidy_by", "subsidy_amount",
-            "subsidy_covers", "sponsorship_allocated", "prize_rounds",
-        ]
-        for field in updatable:
-            if field in body:
-                setattr(t, field, body[field])
+        # PATCH receives home-currency values; FX conversion is a create-only concern.
+        for field, value in coerced.items():
+            setattr(t, field, value)
 
-        if "start_date" in body:
-            t.start_date = datetime.fromisoformat(body["start_date"]).replace(tzinfo=timezone.utc)
-        if "end_date" in body:
-            t.end_date = datetime.fromisoformat(body["end_date"]).replace(tzinfo=timezone.utc)
+        try:
+            if "start_date" in body:
+                t.start_date = parse_tournament_date("start_date", body["start_date"])
+            if "end_date" in body:
+                t.end_date = parse_tournament_date("end_date", body["end_date"])
+        except TournamentFieldError as exc:
+            return jsonify({"error": str(exc)}), 422
 
         t.updated_at = datetime.now(timezone.utc)
         db.commit()

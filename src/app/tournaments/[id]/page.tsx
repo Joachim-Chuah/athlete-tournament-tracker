@@ -2,56 +2,16 @@
 
 import { use } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatMoney, formatDate } from "@/lib/utils";
 import { useUser } from "@/context/user";
 import { api } from "@/lib/api";
-import { TrendingUp, TrendingDown, Minus, Loader2, Trash2 } from "lucide-react";
-import type { ScenarioResult } from "@/types";
-
-function ScenarioRow({
-  s,
-  currency,
-  homeCurrency,
-  isBreakEven,
-}: {
-  s: ScenarioResult;
-  currency: string;
-  homeCurrency: string;
-  isBreakEven: boolean;
-}) {
-  const Icon = s.profitable ? TrendingUp : s.net_result === 0 ? Minus : TrendingDown;
-  const labels: Record<string, string> = { worst: "Worst Case", realistic: "Realistic", best: "Best Case" };
-
-  return (
-    <div className={`rounded-xl p-4 border ${s.profitable ? "border-profit/20 bg-profit-soft" : "border-loss/20 bg-loss-soft"}`}>
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <Icon className={`h-4 w-4 ${s.profitable ? "text-profit" : "text-loss"}`} />
-          <span className="text-sm font-medium text-foreground">{labels[s.scenario]}</span>
-          {isBreakEven && <Badge variant="warning">Break-even</Badge>}
-        </div>
-        <span className="font-mono text-xs uppercase text-muted-foreground">{s.round}</span>
-      </div>
-      <div className="flex items-end justify-between mt-1">
-        <div>
-          <p className="text-xs text-muted-foreground">Prize ({currency})</p>
-          <p className="text-sm text-foreground">{formatMoney(s.prize_money, currency)}</p>
-        </div>
-        <div className="text-right">
-          <p className="text-xs text-muted-foreground">Net ({homeCurrency})</p>
-          <p className={`font-mono text-xl font-bold tabular ${s.profitable ? "text-profit" : "text-loss"}`}>
-            {s.net_result >= 0 ? "+" : ""}{formatMoney(s.net_result, homeCurrency)}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
+import { ScenarioRow } from "@/components/tournaments/ScenarioRow";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
 
 export default function TournamentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -72,18 +32,28 @@ export default function TournamentDetailPage({ params }: { params: Promise<{ id:
     },
   });
 
+  const homeCurrency = user?.home_currency ?? tournament?.home_currency ?? "USD";
+  const tournamentCurrency = tournament?.currency ?? homeCurrency;
+  const showScenarioFx = tournamentCurrency !== homeCurrency;
+
+  const { data: scenarioFx, isFetching: scenarioFxLoading } = useQuery({
+    queryKey: ["fx-rate", homeCurrency, tournamentCurrency],
+    queryFn: () => api.fx.convert(homeCurrency, tournamentCurrency, 1),
+    enabled: showScenarioFx,
+    staleTime: 60 * 60 * 1000,
+  });
+
   if (isLoading || !tournament) {
     return (
       <AppShell>
         <div className="flex h-48 items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <Loader2 className="size-6 animate-spin text-muted-foreground" />
         </div>
       </AppShell>
     );
   }
 
   const { pnl } = tournament;
-  const homeCurrency = user?.home_currency ?? tournament.home_currency ?? "USD";
 
   const expenses = [
     { label: "Flights & Transport", value: tournament.flight_cost },
@@ -119,9 +89,12 @@ export default function TournamentDetailPage({ params }: { params: Promise<{ id:
                 <ScenarioRow
                   key={s.scenario}
                   s={s}
-                  currency={tournament.currency}
+                  currency={homeCurrency}
                   homeCurrency={homeCurrency}
                   isBreakEven={s.round === pnl.break_even_round}
+                  convertedCurrency={tournament.currency}
+                  conversionRate={showScenarioFx ? scenarioFx?.rate ?? null : null}
+                  conversionLoading={scenarioFxLoading}
                 />
               ))}
             </div>
@@ -161,6 +134,13 @@ export default function TournamentDetailPage({ params }: { params: Promise<{ id:
         </Card>
 
         <div className="flex gap-3">
+          <Link
+            href={`/tournaments/${id}/edit`}
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-all duration-150 hover:opacity-90"
+          >
+            <Pencil className="size-4" />
+            Edit
+          </Link>
           <Button
             variant="danger"
             className="flex-1"
@@ -169,7 +149,7 @@ export default function TournamentDetailPage({ params }: { params: Promise<{ id:
             }}
             disabled={deleteMutation.isPending}
           >
-            {deleteMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+            {deleteMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
             Delete
           </Button>
         </div>
