@@ -50,8 +50,8 @@ const Features = () => {
         <div className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-2 lg:grid-cols-3">
           {features.map((f) => (
             <div key={f.title} className="group bg-card p-7 transition-colors hover:bg-secondary/40">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-secondary/60">
-                <f.icon className="h-4 w-4 text-foreground" strokeWidth={1.75} />
+              <div className="flex size-9 items-center justify-center rounded-lg border border-border bg-secondary/60">
+                <f.icon className="size-4 text-foreground" strokeWidth={1.75} />
               </div>
               <h3 className="mt-5 text-base font-semibold tracking-tight">{f.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.desc}</p>

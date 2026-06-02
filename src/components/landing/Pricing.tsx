@@ -78,7 +78,7 @@ const Pricing = () => {
               <ul className="mt-7 flex-1 space-y-3">
                 {t.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-sm text-foreground">
-                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-profit" strokeWidth={2.5} />
+                    <Check className="mt-0.5 size-4 flex-shrink-0 text-profit" strokeWidth={2.5} />
                     {f}
                   </li>
                 ))}

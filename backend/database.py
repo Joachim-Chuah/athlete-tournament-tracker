@@ -29,18 +29,31 @@ def normalize_db_url(url: str) -> str:
     return urlunsplit(parts._replace(query=urlencode(query)))
 
 
+# Engine is built lazily on first DB use, not at import time — so modules that
+# only need pure helpers (e.g. tests importing normalize_db_url or route logic)
+# can import this without a DATABASE_URL set.
+_engine = None
+_sessionmaker = sessionmaker(expire_on_commit=False)
+
+
 def get_engine():
-    url = os.environ.get("DATABASE_URL")
-    if not url:
-        raise RuntimeError("DATABASE_URL is not set")
-    url = normalize_db_url(url)
-    # prepare_threshold=None disables prepared statements — required when
-    # connecting through Supabase's pgbouncer transaction pooler (port 6543)
-    return create_engine(url, pool_pre_ping=True, connect_args={"prepare_threshold": None})
+    global _engine
+    if _engine is None:
+        url = os.environ.get("DATABASE_URL")
+        if not url:
+            raise RuntimeError("DATABASE_URL is not set")
+        url = normalize_db_url(url)
+        # prepare_threshold=None disables prepared statements — required when
+        # connecting through Supabase's pgbouncer transaction pooler (port 6543)
+        _engine = create_engine(url, pool_pre_ping=True, connect_args={"prepare_threshold": None})
+        _sessionmaker.configure(bind=_engine)
+    return _engine
 
 
-engine = get_engine()
-Session = sessionmaker(bind=engine, expire_on_commit=False)
+def Session():
+    """Return a new session, building/binding the engine on first use."""
+    get_engine()
+    return _sessionmaker()
 
 
 def get_db():

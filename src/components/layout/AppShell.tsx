@@ -29,7 +29,7 @@ function NavLink({ href, label, icon: Icon }: { href: string; label: string; ico
           : "text-muted-foreground hover:text-foreground hover:bg-secondary"
       )}
     >
-      <Icon className={cn("h-4 w-4 shrink-0", active ? "text-foreground" : "text-muted-foreground group-hover:text-foreground")} />
+      <Icon className={cn("size-4 shrink-0", active ? "text-foreground" : "text-muted-foreground group-hover:text-foreground")} />
       <span className="hidden md:block">{label}</span>
     </Link>
   );
@@ -40,10 +40,10 @@ function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      className="flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+      className="flex items-center justify-center size-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
       aria-label="Toggle theme"
     >
-      {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
     </button>
   );
 }
@@ -74,7 +74,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+        <Loader2 className="size-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -87,7 +87,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Sidebar — desktop */}
       <aside className="hidden md:flex md:w-56 md:flex-col md:fixed md:inset-y-0 border-r border-border bg-background">
         <div className="flex h-16 items-center gap-2.5 px-4 border-b border-border">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
+          <div className="flex size-7 items-center justify-center rounded-md bg-primary">
             <span className="font-mono text-sm font-bold text-primary-foreground">A</span>
           </div>
           <div>
@@ -103,7 +103,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="p-3 border-t border-border space-y-2">
           {/* User email */}
           <div className="flex items-center gap-2.5 px-2 py-1">
-            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-foreground">
+            <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-foreground">
               {avatarLetter}
             </div>
             <span className="text-xs text-muted-foreground truncate">{userEmail}</span>
@@ -113,7 +113,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               onClick={handleSignOut}
               className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors py-1"
             >
-              <LogOut className="h-3.5 w-3.5" />
+              <LogOut className="size-3.5" />
               Sign out
             </button>
             <ThemeToggle />
@@ -124,7 +124,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Mobile top bar */}
       <header className="md:hidden fixed top-0 left-0 right-0 z-50 flex h-14 items-center justify-between border-b border-border bg-background/90 px-4 backdrop-blur-md">
         <div className="flex items-center gap-2">
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary">
+          <div className="flex size-6 items-center justify-center rounded-md bg-primary">
             <span className="font-mono text-xs font-bold text-primary-foreground">A</span>
           </div>
           <span className="text-sm font-semibold">AthleteTracker</span>
@@ -133,9 +133,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <ThemeToggle />
           <button
             onClick={handleSignOut}
-            className="flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            className="flex items-center justify-center size-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="size-4" />
           </button>
         </div>
       </header>
@@ -161,7 +161,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   active ? "text-foreground" : "text-muted-foreground"
                 )}
               >
-                <Icon className="h-5 w-5" />
+                <Icon className="size-5" />
                 {label}
               </Link>
             );

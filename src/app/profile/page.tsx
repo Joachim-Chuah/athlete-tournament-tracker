@@ -190,7 +190,7 @@ function ProfileForm() {
         )}
 
         <Button type="submit" className="w-full" size="lg" disabled={saving}>
-          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+          {saving ? <Loader2 className="size-4 animate-spin" /> : null}
           {saving ? "Saving…" : user ? "Save Changes" : "Create Profile"}
         </Button>
       </form>

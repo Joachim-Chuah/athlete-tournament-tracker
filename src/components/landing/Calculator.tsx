@@ -38,8 +38,8 @@ const Calculator = () => {
                 "Export PDF for federation reporting",
               ].map((t) => (
                 <li key={t} className="flex items-center gap-3 text-sm text-foreground">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-profit-soft">
-                    <span className="h-1.5 w-1.5 rounded-full bg-profit" />
+                  <span className="flex size-5 items-center justify-center rounded-full bg-profit-soft">
+                    <span className="size-1.5 rounded-full bg-profit" />
                   </span>
                   {t}
                 </li>
@@ -63,14 +63,14 @@ const Calculator = () => {
                 <div key={r.label} className="flex items-center justify-between px-6 py-3.5">
                   <div className="flex items-start gap-3">
                     <span
-                      className={`mt-1 flex h-4 w-4 items-center justify-center rounded-sm ${
+                      className={`mt-1 flex size-4 items-center justify-center rounded-sm ${
                         r.positive ? "bg-profit-soft" : "bg-loss-soft"
                       }`}
                     >
                       {r.positive ? (
-                        <Plus className="h-2.5 w-2.5 text-profit" strokeWidth={3} />
+                        <Plus className="size-2.5 text-profit" strokeWidth={3} />
                       ) : (
-                        <Minus className="h-2.5 w-2.5 text-loss" strokeWidth={3} />
+                        <Minus className="size-2.5 text-loss" strokeWidth={3} />
                       )}
                     </span>
                     <div>
@@ -91,7 +91,7 @@ const Calculator = () => {
 
             <div className="flex items-center justify-between border-t border-border bg-secondary/40 px-6 py-5">
               <div className="flex items-center gap-2">
-                <Equal className="h-4 w-4 text-muted-foreground" />
+                <Equal className="size-4 text-muted-foreground" />
                 <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                   Net result
                 </span>

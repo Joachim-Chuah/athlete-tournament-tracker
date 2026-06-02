@@ -59,7 +59,7 @@ function CallbackHandler() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
-        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+        <Loader2 className="size-5 animate-spin text-muted-foreground" />
         <p className="text-sm text-muted-foreground">Signing you in…</p>
       </div>
     </div>
