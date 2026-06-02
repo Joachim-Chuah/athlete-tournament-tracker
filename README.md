@@ -87,9 +87,15 @@ DATABASE_URL=
 # Open Exchange Rates — for live FX conversion
 OPEN_EXCHANGE_RATES_KEY=
 
-# Supabase
+# Supabase — frontend (sign-in)
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
+
+# Supabase — backend (JWT verification)
+# Used by Flask to verify access tokens. The JWKS endpoint is derived as
+# ${SUPABASE_URL}/auth/v1/.well-known/jwks.json — set SUPABASE_JWKS_URL only to override.
+SUPABASE_URL=
+# SUPABASE_JWKS_URL=
 ```
 
 ### Where to get each value
@@ -101,6 +107,21 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 | `OPEN_EXCHANGE_RATES_KEY` | openexchangerates.org → Sign up → Dashboard → App ID |
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API → Project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API → `anon public` key |
+| `SUPABASE_URL` | Same Project URL — backend uses it to fetch JWKS public keys and verify tokens |
+| `SUPABASE_JWKS_URL` | Optional — only set to override the derived `…/auth/v1/.well-known/jwks.json` endpoint |
+
+### Supabase Auth
+
+The app signs in with Google OAuth through Supabase. In your Supabase project:
+
+1. Enable **Authentication → Sign In / Providers → Google**.
+2. Add the Google OAuth client ID and secret from Google Cloud.
+3. Set **Authentication → URL Configuration → Site URL** to `http://localhost:3000` for local development.
+4. Add `http://localhost:3000/auth/callback` to the allowed redirect URLs.
+
+If you deploy the frontend, add the deployed `/auth/callback` URL there too.
+
+The Flask backend verifies the Supabase access token on every route (except `/health`) via JWKS, so requests must send an `Authorization: Bearer <token>` header — this requires `SUPABASE_URL` to be set.
 
 ---
 

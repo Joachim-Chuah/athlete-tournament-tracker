@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Search, Loader2, Zap, MapPin, Calendar, Trophy } from "lucide-react";
+import { api } from "@/lib/api";
 import { cn, formatMoney } from "@/lib/utils";
 import type { SeedTournament } from "@/data/seed-tournaments";
 
@@ -93,6 +94,7 @@ function ResultCard({ t, onSelect }: { t: SeedTournament; onSelect: () => void }
 export function TournamentSearch({ onSelect, sport }: Props) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SeedTournament[]>([]);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
@@ -104,12 +106,12 @@ export function TournamentSearch({ onSelect, sport }: Props) {
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        const params = new URLSearchParams({ q: query });
-        if (sport) params.set("sport", sport);
-        const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
-        const res = await fetch(`${base}/api/tournaments/search?${params}`);
-        const data = await res.json();
-        setResults(data);
+        setSearchError(null);
+        setResults(await api.tournaments.search(query, sport));
+        setOpen(true);
+      } catch {
+        setSearchError("Search is unavailable right now. Try again in a moment.");
+        setResults([]);
         setOpen(true);
       } finally {
         setLoading(false);
@@ -169,7 +171,13 @@ export function TournamentSearch({ onSelect, sport }: Props) {
         </div>
       )}
 
-      {open && !loading && results.length === 0 && query.length > 1 && (
+      {open && !loading && searchError && query.length > 1 && (
+        <div className="absolute z-50 mt-1 w-full rounded-xl border border-border bg-card px-4 py-5 text-center">
+          <p className="text-sm text-muted-foreground">{searchError}</p>
+        </div>
+      )}
+
+      {open && !loading && !searchError && results.length === 0 && query.length > 1 && (
         <div className="absolute z-50 mt-1 w-full rounded-xl border border-border bg-card px-4 py-5 text-center">
           <p className="text-sm text-muted-foreground">No tournaments found for &quot;{query}&quot;</p>
           <p className="text-xs text-muted-foreground/60 mt-1">Fill in the details manually below.</p>
