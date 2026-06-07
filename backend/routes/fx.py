@@ -16,7 +16,11 @@ def fx_convert():
     if not from_ or not to:
         return jsonify({"error": "from and to currency codes required"}), 400
 
-    rates = fetch_rates("USD")
+    try:
+        rates = fetch_rates("USD")
+    except Exception:
+        return jsonify({"error": "exchange rate service unavailable"}), 503
+
     converted = convert(amount, from_, to, rates)
 
     if converted is None:

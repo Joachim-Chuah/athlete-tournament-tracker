@@ -95,3 +95,13 @@ def test_parse_tournament_date_accepts_iso_date():
 def test_parse_tournament_date_rejects_invalid_date():
     with pytest.raises(TournamentFieldError, match="start_date"):
         parse_tournament_date("start_date", "not-a-date")
+
+
+def test_coerce_prize_rounds_returns_empty_for_none():
+    result = coerce_tournament_fields({"prize_rounds": None})
+    assert result["prize_rounds"] == {}
+
+
+def test_coerce_prize_rounds_rejects_non_dict_value():
+    with pytest.raises(TournamentFieldError, match="prize_rounds must be an object"):
+        coerce_tournament_fields({"prize_rounds": "r1:500"})
