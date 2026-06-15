@@ -29,6 +29,7 @@ type FormState = {
   prize_sf: string;
   prize_f: string;
   prize_w: string;
+  prize_tax_rate: string;
   flight_cost: string;
   accommodation_total: string;
   coaching_cost: string;
@@ -46,6 +47,7 @@ const INITIAL: FormState = {
   name: "", location: "", country: "", currency: "EUR",
   start_date: "", end_date: "", entry_fee: "",
   prize_r1: "", prize_r2: "", prize_r3: "", prize_qf: "", prize_sf: "", prize_f: "", prize_w: "",
+  prize_tax_rate: "0",
   flight_cost: "", accommodation_total: "", coaching_cost: "", misc_cost: "",
   subsidized: false, subsidy_by: "", subsidy_covers: "flights", subsidy_amount: "",
   sponsorship_allocated: "", duration_days: "", daily_spending_cap: "",
@@ -120,6 +122,18 @@ function Step2({ form, set }: StepProps) {
           <Input type="number" min="0" placeholder="0" value={form[key] as string} onChange={(e) => set(key, e.target.value)} />
         </FieldGroup>
       ))}
+      <FieldGroup>
+        <Label>Prize Tax Rate (%)</Label>
+        <Input
+          type="number"
+          min="0"
+          max="100"
+          step="0.01"
+          placeholder="0"
+          value={form.prize_tax_rate}
+          onChange={(e) => set("prize_tax_rate", e.target.value)}
+        />
+      </FieldGroup>
     </div>
   );
 }
@@ -254,6 +268,13 @@ export default function NewTournamentPage() {
 
   const handleSubmit = async () => {
     if (!user) return;
+
+    const prizeTaxRate = Number(form.prize_tax_rate || 0);
+    if (!Number.isFinite(prizeTaxRate) || prizeTaxRate < 0 || prizeTaxRate > 100) {
+      setError("Prize tax rate must be between 0% and 100%.");
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
 
@@ -293,6 +314,7 @@ export default function NewTournamentPage() {
         sponsorship_allocated: n(form.sponsorship_allocated),
         daily_spending_cap: n(form.daily_spending_cap),
         prize_rounds,
+        prize_tax_rate: prizeTaxRate,
       });
       router.push(`/tournaments/${tournament.id}`);
     } catch (err) {

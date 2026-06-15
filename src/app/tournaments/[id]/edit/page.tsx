@@ -41,6 +41,7 @@ type FormState = {
   prize_sf: string;
   prize_f: string;
   prize_w: string;
+  prize_tax_rate: string;
 };
 
 type MoneyFieldKey =
@@ -144,6 +145,7 @@ function tournamentToForm(tournament: Tournament): FormState {
     prize_sf: valueString(prizeRounds.sf),
     prize_f: valueString(prizeRounds.f),
     prize_w: valueString(prizeRounds.w),
+    prize_tax_rate: valueString(tournament.prize_tax_rate),
   };
 }
 
@@ -172,12 +174,22 @@ function buildPayload(form: FormState, durationDays: number): Partial<Tournament
     subsidy_amount: form.subsidized ? n(form.subsidy_amount) : 0,
     sponsorship_allocated: n(form.sponsorship_allocated),
     prize_rounds,
+    prize_tax_rate: n(form.prize_tax_rate),
   };
 }
 
 function buildValidPayload(form: FormState): Partial<Tournament> | null {
   const durationDays = parseDurationDays(form.duration_days);
-  if (durationDays === null || hasInvalidMoneyValue(form)) return null;
+  const prizeTaxRate = Number(form.prize_tax_rate);
+  if (
+    durationDays === null
+    || hasInvalidMoneyValue(form)
+    || !Number.isFinite(prizeTaxRate)
+    || prizeTaxRate < 0
+    || prizeTaxRate > 100
+  ) {
+    return null;
+  }
   return buildPayload(form, durationDays);
 }
 
@@ -338,7 +350,7 @@ function EditTournamentForm({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const showFx = form.currency !== homeCurrency;
   const previewBlockedMessage = buildValidPayload(form) === null
-    ? "Enter a whole duration of at least 1 day and non-negative money values to preview P&L."
+    ? "Enter a whole duration of at least 1 day, non-negative money values, and a tax rate from 0% to 100% to preview P&L."
     : null;
 
   const { data: fx, isFetching: fxLoading } = useQuery({
@@ -388,7 +400,7 @@ function EditTournamentForm({
     setSubmitError(null);
     const payload = buildValidPayload(form);
     if (!payload) {
-      setSubmitError("Enter a whole duration of at least 1 day and non-negative money values before saving.");
+      setSubmitError("Enter a whole duration of at least 1 day, non-negative money values, and a tax rate from 0% to 100% before saving.");
       return;
     }
     updateMutation.mutate(payload);
@@ -561,19 +573,33 @@ function EditTournamentForm({
               <CardHeader>
                 <CardTitle>Prize Rounds</CardTitle>
               </CardHeader>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {ROUND_FIELDS.map((round) => (
-                  <MoneyField
-                    key={round.key}
-                    label={round.label}
-                    value={form[round.field]}
-                    onChange={(value) => set(round.field, value)}
-                    homeCurrency={homeCurrency}
-                    tournamentCurrency={form.currency}
-                    fxRate={fxRate}
-                    fxLoading={fxLoading}
+              <div className="space-y-4">
+                <FieldGroup>
+                  <Label>Prize Tax Rate (%)</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    inputMode="decimal"
+                    value={form.prize_tax_rate}
+                    onChange={(event) => set("prize_tax_rate", event.target.value)}
                   />
-                ))}
+                </FieldGroup>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {ROUND_FIELDS.map((round) => (
+                    <MoneyField
+                      key={round.key}
+                      label={round.label}
+                      value={form[round.field]}
+                      onChange={(value) => set(round.field, value)}
+                      homeCurrency={homeCurrency}
+                      tournamentCurrency={form.currency}
+                      fxRate={fxRate}
+                      fxLoading={fxLoading}
+                    />
+                  ))}
+                </div>
               </div>
             </Card>
 

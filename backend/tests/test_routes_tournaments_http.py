@@ -117,6 +117,40 @@ class TestCreateTournamentMoneyValidation:
         r = client.post("/api/tournaments", data=json.dumps(body), headers=auth_headers)
         assert r.status_code == 422
 
+    @pytest.mark.parametrize("rate", [-1, 100.01, "nan"])
+    def test_invalid_prize_tax_rate_returns_422(
+        self,
+        client,
+        mock_auth,
+        auth_headers,
+        rate,
+    ):
+        body = {**VALID_BODY, "prize_tax_rate": rate}
+        r = client.post("/api/tournaments", data=json.dumps(body), headers=auth_headers)
+        assert r.status_code == 422
+        assert "prize_tax_rate" in r.get_json()["error"]
+
+
+class TestCreateTournamentPrizeTax:
+    def test_create_persists_prize_tax_rate(self, client, mock_auth, auth_headers):
+        body = {**VALID_BODY, "prize_tax_rate": "30"}
+        user = make_mock_user()
+        mock_db = _make_db(user)
+        cm = make_session_cm(mock_db)
+        mock_t = make_mock_tournament()
+
+        with patch("backend.routes.tournaments.Session", return_value=cm):
+            with patch("backend.routes.tournaments.Tournament", return_value=mock_t) as tournament_cls:
+                with patch("backend.routes.tournaments._with_pnl", return_value={}):
+                    r = client.post(
+                        "/api/tournaments",
+                        data=json.dumps(body),
+                        headers=auth_headers,
+                    )
+
+        assert r.status_code == 201
+        assert tournament_cls.call_args.kwargs["prize_tax_rate"] == 30.0
+
 
 # ---------------------------------------------------------------------------
 # Date validation (was missing from create, only worked on update)
@@ -213,6 +247,20 @@ class TestUpdateTournament:
         )
         assert r.status_code == 422
 
+    def test_update_invalid_prize_tax_rate_returns_422(
+        self,
+        client,
+        mock_auth,
+        auth_headers,
+    ):
+        r = client.patch(
+            "/api/tournaments/some-id",
+            data=json.dumps({"prize_tax_rate": 101}),
+            headers=auth_headers,
+        )
+        assert r.status_code == 422
+        assert "prize_tax_rate" in r.get_json()["error"]
+
     def test_update_invalid_date_returns_422(self, client, mock_auth, auth_headers):
         mock_t = make_mock_tournament()
         mock_t.user_id = USER_ID
@@ -239,6 +287,37 @@ class TestUpdateTournament:
                 headers=auth_headers,
             )
         assert r.status_code == 404
+
+    def test_update_persists_prize_tax_rate(self, client, mock_auth, auth_headers):
+        mock_t = make_mock_tournament()
+        mock_t.user_id = USER_ID
+        user = make_mock_user()
+        mock_db = MagicMock()
+        tournament_q = MagicMock()
+        tournament_q.filter_by.return_value.first.return_value = mock_t
+        user_q = MagicMock()
+        user_q.filter_by.return_value.first.return_value = user
+
+        def _query(model):
+            if model is Tournament:
+                return tournament_q
+            if model is User:
+                return user_q
+            return MagicMock()
+
+        mock_db.query.side_effect = _query
+        cm = make_session_cm(mock_db)
+        with patch("backend.routes.tournaments.Session", return_value=cm):
+            with patch("backend.routes.tournaments._with_pnl", return_value={}):
+                r = client.patch(
+                    f"/api/tournaments/{mock_t.id}",
+                    data=json.dumps({"prize_tax_rate": "25"}),
+                    headers=auth_headers,
+                )
+
+        assert r.status_code == 200
+        assert mock_t.prize_tax_rate == 25.0
+        mock_db.commit.assert_called_once()
 
 
 # ---------------------------------------------------------------------------
@@ -393,3 +472,36 @@ class TestPnlPreview:
         data = r.get_json()
         assert "scenarios" in data
         assert len(data["scenarios"]) == 3
+
+    def test_preview_applies_prize_tax_rate(self, client, mock_auth, auth_headers):
+        r = client.post(
+            "/api/tournaments/pnl-preview",
+            data=json.dumps({
+                "prize_rounds": {"w": 10000},
+                "prize_tax_rate": 30,
+            }),
+            headers=auth_headers,
+        )
+
+        assert r.status_code == 200
+        scenario = r.get_json()["scenarios"][0]
+        assert scenario["prize_money"] == 10000
+        assert scenario["prize_money_after_tax"] == 7000
+
+    def test_preview_rejects_invalid_prize_tax_rate(
+        self,
+        client,
+        mock_auth,
+        auth_headers,
+    ):
+        r = client.post(
+            "/api/tournaments/pnl-preview",
+            data=json.dumps({
+                "prize_rounds": {"w": 10000},
+                "prize_tax_rate": 101,
+            }),
+            headers=auth_headers,
+        )
+
+        assert r.status_code == 422
+        assert "prize_tax_rate" in r.get_json()["error"]

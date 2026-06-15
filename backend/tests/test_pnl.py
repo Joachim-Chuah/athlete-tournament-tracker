@@ -77,6 +77,40 @@ class TestScenarios:
 
 
 # ---------------------------------------------------------------------------
+# Prize tax withholding
+# ---------------------------------------------------------------------------
+
+class TestPrizeTax:
+    def test_zero_rate_preserves_existing_results(self):
+        without_tax_field = calculate_pnl(BASE)
+        with_zero_tax = calculate_pnl({**BASE, "prize_tax_rate": 0})
+
+        assert with_zero_tax == without_tax_field
+
+    def test_thirty_percent_rate_returns_post_tax_prize_and_net(self):
+        result = calculate_pnl({**BASE, "prize_tax_rate": 30})
+        best = result["scenarios"][2]
+
+        assert best["prize_money"] == 25000
+        assert best["prize_money_after_tax"] == pytest.approx(17500)
+        assert best["net_result"] == pytest.approx(17500 + 500 - 4700)
+
+    def test_tax_can_flip_realistic_scenario_from_profit_to_loss(self):
+        tournament = {
+            **BASE,
+            "prize_rounds": {"r1": 0, "qf": 5000, "w": 10000},
+            "prize_tax_rate": 30,
+        }
+
+        realistic = calculate_pnl(tournament)["scenarios"][1]
+
+        assert realistic["round"] == "qf"
+        assert realistic["prize_money_after_tax"] == pytest.approx(3500)
+        assert realistic["net_result"] == pytest.approx(-700)
+        assert realistic["profitable"] is False
+
+
+# ---------------------------------------------------------------------------
 # Break-even round
 # ---------------------------------------------------------------------------
 
@@ -93,6 +127,15 @@ class TestBreakEven:
         cheap = {**BASE, "flight_cost": 0, "accommodation_total": 0, "coaching_cost": 0,
                  "misc_cost": 0, "entry_fee": 0, "daily_spending_cap": 0, "sponsorship_allocated": 0}
         assert calculate_pnl(cheap)["break_even_round"] == "r1"
+
+    def test_tax_moves_break_even_to_a_later_round(self):
+        tournament = {
+            **BASE,
+            "prize_rounds": {"r1": 1000, "qf": 4800, "sf": 7000, "w": 10000},
+            "prize_tax_rate": 30,
+        }
+
+        assert calculate_pnl(tournament)["break_even_round"] == "sf"
 
 
 # ---------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+import math
 import uuid
 from datetime import datetime, timezone
 from flask import Blueprint, request, jsonify, g
@@ -40,9 +41,23 @@ def _coerce_non_negative_float(field: str, value) -> float:
     except (TypeError, ValueError) as exc:
         raise TournamentFieldError(f"{field} must be a number") from exc
 
+    if not math.isfinite(coerced):
+        raise TournamentFieldError(f"{field} must be a finite number")
     if coerced < 0:
         raise TournamentFieldError(f"{field} must be greater than or equal to 0")
     return coerced
+
+
+def _coerce_prize_tax_rate(value) -> float:
+    try:
+        rate = float(value)
+    except (TypeError, ValueError) as exc:
+        raise TournamentFieldError("prize_tax_rate must be a number") from exc
+
+    if not math.isfinite(rate) or not 0 <= rate <= 100:
+        raise TournamentFieldError("prize_tax_rate must be between 0 and 100")
+
+    return rate
 
 
 def _coerce_prize_rounds(value) -> dict:
@@ -78,6 +93,11 @@ def coerce_tournament_fields(body: dict) -> dict:
     for field in PASSTHROUGH_FIELDS:
         if field in body:
             coerced[field] = body[field]
+
+    if "prize_tax_rate" in body:
+        coerced["prize_tax_rate"] = _coerce_prize_tax_rate(
+            body["prize_tax_rate"]
+        )
 
     if "prize_rounds" in body:
         coerced["prize_rounds"] = _coerce_prize_rounds(body["prize_rounds"])
@@ -200,6 +220,7 @@ def create_tournament():
             subsidy_covers=subsidy_covers,
             sponsorship_allocated=float(converted.get("sponsorship_allocated") or 0),
             prize_rounds=converted.get("prize_rounds") or {},
+            prize_tax_rate=float(converted.get("prize_tax_rate") or 0),
         )
         db.add(t)
         db.commit()

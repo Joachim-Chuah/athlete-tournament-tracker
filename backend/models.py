@@ -74,6 +74,11 @@ class Tournament(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
+    prize_tax_rate: Mapped[float] = mapped_column(
+        Float,
+        nullable=False,
+        default=0.0,
+    )
 
     user = relationship("User", back_populates="tournaments")
 
@@ -103,6 +108,7 @@ class Tournament(Base):
             "prize_rounds": self.prize_rounds,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+            "prize_tax_rate": self.prize_tax_rate,
         }
 
 

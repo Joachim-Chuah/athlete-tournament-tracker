@@ -92,6 +92,7 @@ def make_mock_tournament(prize_rounds=None, net_loss_realistic=4200.0):
         "subsidy_covers": None,
         "sponsorship_allocated": 500,
         "prize_rounds": prize_rounds or {"r1": 500, "qf": 4800, "sf": 9000, "w": 25000},
+        "prize_tax_rate": 0,
         "created_at": "2026-01-01T00:00:00+00:00",
         "updated_at": "2026-01-01T00:00:00+00:00",
     }

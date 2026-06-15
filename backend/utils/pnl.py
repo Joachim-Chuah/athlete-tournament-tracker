@@ -19,6 +19,7 @@ def calculate_pnl(tournament: dict) -> dict:
     subsidy_amount = tournament.get("subsidy_amount") or 0
     subsidy_covers = tournament.get("subsidy_covers")
     sponsorship_allocated = tournament.get("sponsorship_allocated") or 0
+    prize_tax_rate = tournament.get("prize_tax_rate") or 0
 
     net_flights = (
         max(0, flight_cost - subsidy_amount)
@@ -64,11 +65,13 @@ def calculate_pnl(tournament: dict) -> dict:
 
     def make_scenario(scenario: str, round_key: str) -> dict:
         prize_money = prize_rounds.get(round_key) or 0
-        net_result = prize_money + total_income_base - adjusted_expenses
+        prize_money_after_tax = prize_money * (1 - prize_tax_rate / 100)
+        net_result = prize_money_after_tax + total_income_base - adjusted_expenses
         return {
             "scenario": scenario,
             "round": round_key,
             "prize_money": prize_money,
+            "prize_money_after_tax": prize_money_after_tax,
             "net_result": net_result,
             "profitable": net_result >= 0,
         }
@@ -82,7 +85,11 @@ def calculate_pnl(tournament: dict) -> dict:
     break_even_round = next(
         (
             r for r in available_rounds
-            if (prize_rounds.get(r) or 0) + total_income_base >= adjusted_expenses
+            if (
+                (prize_rounds.get(r) or 0) * (1 - prize_tax_rate / 100)
+                + total_income_base
+                >= adjusted_expenses
+            )
         ),
         None,
     )
