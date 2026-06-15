@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, g
 from backend.database import Session
-from backend.models import User
+from backend.models import User, Tournament
+from backend.utils.pnl import calculate_pnl, calculate_runway
 
 bp = Blueprint("profile", __name__)
 
@@ -9,7 +10,26 @@ bp = Blueprint("profile", __name__)
 def get_profile():
     with Session() as db:
         user = db.query(User).filter_by(id=g.user_id).first()
-        return jsonify(user.to_dict() if user else None)
+        if not user:
+            return jsonify(None)
+
+        result = user.to_dict()
+
+        tournaments = db.query(Tournament).filter_by(user_id=g.user_id).all()
+        net_losses = []
+        for t in tournaments:
+            pnl = calculate_pnl(t.to_dict())
+            realistic = next((s for s in pnl["scenarios"] if s["scenario"] == "realistic"), None)
+            if realistic and realistic["net_result"] < 0:
+                net_losses.append(abs(realistic["net_result"]))
+
+        if net_losses:
+            avg_spend = sum(net_losses) / len(net_losses)
+            result["runway_tournaments"] = calculate_runway(user.savings_balance, avg_spend)
+        else:
+            result["runway_tournaments"] = None
+
+        return jsonify(result)
 
 
 @bp.post("/api/profile")

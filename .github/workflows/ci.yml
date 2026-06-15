@@ -49,8 +49,13 @@ jobs:
         run: |
           pytest backend/tests/ -v \
             --cov=backend/utils \
+            --cov=backend/routes \
             --cov-report=term-missing \
+            --cov-report=xml \
             --cov-fail-under=80
+        env:
+          # Stub vars so app.py imports without error (no real DB or auth needed)
+          SUPABASE_JWKS_URL: https://placeholder.supabase.co/auth/v1/.well-known/jwks.json
 
       - name: Post coverage comment
         if: github.event_name == 'pull_request'
@@ -58,10 +63,13 @@ jobs:
         with:
           script: |
             const { execSync } = require('child_process');
-            const out = execSync('pytest backend/tests/ --cov=backend/utils --cov-report=term-missing -q 2>&1 || true').toString();
+            const out = execSync(
+              'pytest backend/tests/ --cov=backend/utils --cov=backend/routes --cov-report=term-missing -q 2>&1 || true',
+              { env: { ...process.env, SUPABASE_JWKS_URL: 'https://placeholder.supabase.co/auth/v1/.well-known/jwks.json' } }
+            ).toString();
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `## Python Coverage\n\`\`\`\n${out.slice(-2000)}\n\`\`\``,
+              body: `## Python Coverage\n\`\`\`\n${out.slice(-3000)}\n\`\`\``,
             });
