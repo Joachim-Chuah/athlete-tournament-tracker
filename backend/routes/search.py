@@ -1,3 +1,4 @@
+import logging
 import re
 import json as _json
 import requests
@@ -6,6 +7,8 @@ from flask import Blueprint, request, jsonify
 from sqlalchemy import or_, func
 from backend.database import Session
 from backend.models import KnownTournament
+
+logger = logging.getLogger(__name__)
 
 bp = Blueprint("search", __name__)
 
@@ -130,7 +133,8 @@ def _psa_raw_to_results(raw: dict) -> list[dict]:
             for comp in comps
             if isinstance(comp, dict)
         ]
-    except Exception:
+    except Exception as exc:
+        logger.warning("Failed to parse PSA tournament record: %s", exc)
         return []
 
 
@@ -149,7 +153,8 @@ def _search_psa_live(q: str) -> list:
         for r in resp.json():
             results.extend(_psa_raw_to_results(r))
         return [r for r in results if (r.get("start_date") or "9999") >= cutoff]
-    except Exception:
+    except Exception as exc:
+        logger.warning("PSA live search failed for %r: %s", q, exc)
         return []
 
 
@@ -184,8 +189,8 @@ def search_tournaments():
                 .all()
             )
             db_results = [r.to_dict() for r in results]
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning("DB search failed: %s", exc)
 
     is_squash = not sport or sport == "squash"
     needs_live = is_squash and len(q) > 1 and len(db_results) < 4

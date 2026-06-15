@@ -28,7 +28,8 @@ export function ScenarioRow({
 }) {
   const Icon = s.profitable ? TrendingUp : s.net_result === 0 ? Minus : TrendingDown;
   const showConverted = Boolean(convertedCurrency && convertedCurrency !== currency);
-  const convertedPrize = showConverted && conversionRate ? s.prize_money * conversionRate : null;
+  const convertedGrossPrize = showConverted && conversionRate ? s.prize_money * conversionRate : null;
+  const convertedAfterTaxPrize = showConverted && conversionRate ? s.prize_money_after_tax * conversionRate : null;
   const convertedNet = showConverted && conversionRate ? s.net_result * conversionRate : null;
   const signedNet = `${s.net_result >= 0 ? "+" : ""}${formatMoney(s.net_result, homeCurrency)}`;
 
@@ -44,14 +45,17 @@ export function ScenarioRow({
       </div>
       <div className="flex items-end justify-between gap-3 mt-1">
         <div>
-          <p className="text-xs text-muted-foreground">Prize ({currency})</p>
+          <p className="text-xs text-muted-foreground">Gross prize ({currency})</p>
           <p className="text-sm text-foreground">{formatMoney(s.prize_money, currency)}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            After tax: <span className="text-foreground">{formatMoney(s.prize_money_after_tax, currency)}</span>
+          </p>
           {showConverted && (
             <p className="mt-0.5 text-xs text-muted-foreground">
               {conversionLoading
                 ? "FX..."
-                : convertedPrize !== null
-                  ? `≈ ${formatMoney(convertedPrize, convertedCurrency ?? currency)}`
+                : convertedGrossPrize !== null && convertedAfterTaxPrize !== null
+                  ? `≈ ${formatMoney(convertedGrossPrize, convertedCurrency ?? currency)} gross · ${formatMoney(convertedAfterTaxPrize, convertedCurrency ?? currency)} after tax`
                   : "FX unavailable"}
             </p>
           )}

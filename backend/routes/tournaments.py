@@ -182,16 +182,22 @@ def create_tournament():
     except TournamentFieldError as exc:
         return jsonify({"error": str(exc)}), 422
 
+    try:
+        start_date = parse_tournament_date("start_date", body["start_date"])
+        end_date = parse_tournament_date("end_date", body["end_date"])
+    except TournamentFieldError as exc:
+        return jsonify({"error": str(exc)}), 422
+
     with Session() as db:
         user = db.query(User).filter_by(id=g.user_id).first()
         if not user:
             # Authenticated, but profile setup hasn't happened yet.
             return jsonify({"error": "complete your profile before adding tournaments"}), 409
 
-        converted = _to_home_currency(
-            {**body, **coerced},
-            user.home_currency,
-        )
+        try:
+            converted = _to_home_currency({**body, **coerced}, user.home_currency)
+        except Exception:
+            return jsonify({"error": "currency conversion failed — try again later"}), 503
 
         t = Tournament(
             id=str(uuid.uuid4()),
@@ -200,8 +206,8 @@ def create_tournament():
             location=converted["location"],
             country=converted["country"],
             currency=converted["currency"],
-            start_date=datetime.fromisoformat(converted["start_date"]).replace(tzinfo=timezone.utc),
-            end_date=datetime.fromisoformat(converted["end_date"]).replace(tzinfo=timezone.utc),
+            start_date=start_date,
+            end_date=end_date,
             duration_days=int(converted["duration_days"]),
             entry_fee=float(converted.get("entry_fee") or 0),
             flight_cost=float(converted.get("flight_cost") or 0),

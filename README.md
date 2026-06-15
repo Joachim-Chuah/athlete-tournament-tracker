@@ -134,16 +134,25 @@ athlete-tournament-tracker/
 │   ├── database.py                 # SQLAlchemy engine + session
 │   ├── models.py                   # SQLAlchemy models (User, Tournament, KnownTournament)
 │   ├── routes/
-│   │   ├── profile.py              # GET/POST /api/profile
-│   │   ├── tournaments.py          # CRUD /api/tournaments
+│   │   ├── profile.py              # GET/POST /api/profile (includes runway_tournaments)
+│   │   ├── tournaments.py          # CRUD /api/tournaments + POST /api/tournaments/pnl-preview
 │   │   ├── fx.py                   # GET /api/fx
 │   │   └── search.py               # GET /api/tournaments/search
 │   ├── utils/
 │   │   ├── pnl.py                  # P&L formula — single source of truth
 │   │   └── currency.py             # FX conversion, 1hr cache
 │   └── tests/
-│       ├── test_pnl.py
-│       └── test_currency.py
+│       ├── conftest.py                 # Shared Flask test client + mock fixtures
+│       ├── test_pnl.py                 # P&L formula + runway calculator
+│       ├── test_currency.py            # convert() + format_money()
+│       ├── test_currency_fetch.py      # fetch_rates() with mocked HTTP
+│       ├── test_auth.py                # JWT verification
+│       ├── test_database.py            # URL normalisation
+│       ├── test_tournaments.py         # Field coercion utilities
+│       ├── test_routes_fx.py           # GET /api/fx (HTTP)
+│       ├── test_routes_profile_http.py # GET/POST /api/profile (HTTP)
+│       ├── test_routes_tournaments_http.py # Tournaments CRUD (HTTP)
+│       └── test_routes_search.py       # Search helpers + GET /api/tournaments/search
 │
 ├── src/                            # Next.js frontend
 │   ├── app/                        # App Router pages
@@ -204,7 +213,10 @@ npm run scrape:psa     # Pull latest PSA tournament data into DB
 ```bash
 .venv/bin/python -m backend.app          # Start Flask on localhost:5000
 .venv/bin/pytest backend/tests/ -v       # Python unit tests
-.venv/bin/pytest backend/tests/ --cov    # Python tests + coverage
+SUPABASE_JWKS_URL=https://placeholder.supabase.co/auth/v1/.well-known/jwks.json \
+.venv/bin/pytest backend/tests/ \
+  --cov=backend/utils --cov=backend/routes \
+  --cov-report=term-missing              # Python tests + coverage
 ```
 
 ---
