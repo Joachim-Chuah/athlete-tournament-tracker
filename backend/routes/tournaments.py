@@ -1,3 +1,4 @@
+import math
 import uuid
 from datetime import datetime, timezone
 from flask import Blueprint, request, jsonify, g
@@ -40,9 +41,23 @@ def _coerce_non_negative_float(field: str, value) -> float:
     except (TypeError, ValueError) as exc:
         raise TournamentFieldError(f"{field} must be a number") from exc
 
+    if not math.isfinite(coerced):
+        raise TournamentFieldError(f"{field} must be a finite number")
     if coerced < 0:
         raise TournamentFieldError(f"{field} must be greater than or equal to 0")
     return coerced
+
+
+def _coerce_prize_tax_rate(value) -> float:
+    try:
+        rate = float(value)
+    except (TypeError, ValueError) as exc:
+        raise TournamentFieldError("prize_tax_rate must be a number") from exc
+
+    if not math.isfinite(rate) or not 0 <= rate <= 100:
+        raise TournamentFieldError("prize_tax_rate must be between 0 and 100")
+
+    return rate
 
 
 def _coerce_prize_rounds(value) -> dict:
@@ -78,6 +93,11 @@ def coerce_tournament_fields(body: dict) -> dict:
     for field in PASSTHROUGH_FIELDS:
         if field in body:
             coerced[field] = body[field]
+
+    if "prize_tax_rate" in body:
+        coerced["prize_tax_rate"] = _coerce_prize_tax_rate(
+            body["prize_tax_rate"]
+        )
 
     if "prize_rounds" in body:
         coerced["prize_rounds"] = _coerce_prize_rounds(body["prize_rounds"])
@@ -157,13 +177,21 @@ def create_tournament():
     if subsidy_covers and subsidy_covers not in VALID_SUBSIDY:
         return jsonify({"error": f"invalid subsidy_covers: {subsidy_covers}"}), 422
 
+    try:
+        coerced = coerce_tournament_fields(body)
+    except TournamentFieldError as exc:
+        return jsonify({"error": str(exc)}), 422
+
     with Session() as db:
         user = db.query(User).filter_by(id=g.user_id).first()
         if not user:
             # Authenticated, but profile setup hasn't happened yet.
             return jsonify({"error": "complete your profile before adding tournaments"}), 409
 
-        converted = _to_home_currency(body, user.home_currency)
+        converted = _to_home_currency(
+            {**body, **coerced},
+            user.home_currency,
+        )
 
         t = Tournament(
             id=str(uuid.uuid4()),
@@ -186,6 +214,7 @@ def create_tournament():
             subsidy_covers=subsidy_covers,
             sponsorship_allocated=float(converted.get("sponsorship_allocated") or 0),
             prize_rounds=converted.get("prize_rounds") or {},
+            prize_tax_rate=float(converted.get("prize_tax_rate") or 0),
         )
         db.add(t)
         db.commit()

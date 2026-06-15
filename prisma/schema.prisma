@@ -44,6 +44,7 @@ model Tournament {
   prize_rounds          Json
   created_at            DateTime       @default(now())
   updated_at            DateTime       @updatedAt
+  prize_tax_rate        Float          @default(0)
 
   @@index([user_id])
 }
