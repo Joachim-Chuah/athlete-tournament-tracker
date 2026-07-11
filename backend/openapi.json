@@ -544,7 +544,7 @@
         "type": "object"
       },
       "ProfileRequest": {
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
           "email": {
             "anyOf": [
@@ -752,7 +752,7 @@
         "type": "object"
       },
       "TournamentCreate": {
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
           "accommodation_total": {
             "anyOf": [
@@ -970,7 +970,7 @@
         "type": "object"
       },
       "TournamentInput": {
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
           "accommodation_total": {
             "anyOf": [

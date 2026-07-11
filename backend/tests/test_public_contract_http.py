@@ -98,11 +98,12 @@ def test_pnl_preview_success_shape_is_equivalent(
 
 
 @pytest.mark.parametrize("prefix", ["/api", "/api/v1"])
-def test_create_contract_ignores_compatibility_user_id_and_validates_response(
+def test_create_contract_ignores_unknown_fields_and_uses_authenticated_owner(
     client, mock_auth, auth_headers, prefix
 ):
     body = {
         "user_id": "client-supplied-user",
+        "future_client_field": {"ignored": True},
         "name": "British Open",
         "location": "Birmingham",
         "country": "UK",
@@ -130,9 +131,11 @@ def test_create_contract_ignores_compatibility_user_id_and_validates_response(
         )
 
     assert request_contract.model_dump()["user_id"] == "client-supplied-user"
+    assert "future_client_field" not in request_contract.model_dump()
     assert response.status_code == 201
     assert tournament_model.call_args.kwargs["user_id"] == USER_ID
     assert tournament_model.call_args.kwargs["user_id"] != body["user_id"]
+    assert "future_client_field" not in tournament_model.call_args.kwargs
 
     response_body = response.get_json()
     response_body["future_additive_field"] = {"enabled": True}

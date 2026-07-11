@@ -13,6 +13,13 @@ class StrictRequestModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+class CompatibleRequestModel(BaseModel):
+    model_config = ConfigDict(
+        extra="ignore",
+        json_schema_extra={"additionalProperties": True},
+    )
+
+
 class AdditiveResponseModel(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -25,7 +32,7 @@ class Health(AdditiveResponseModel):
     status: Literal["ok"]
 
 
-class ProfileRequest(StrictRequestModel):
+class ProfileRequest(CompatibleRequestModel):
     name: str
     home_country: str
     home_currency: str = Field(min_length=3, max_length=3)
@@ -86,7 +93,7 @@ class PnlResult(AdditiveResponseModel):
     break_even_round: RoundKey | None
 
 
-class TournamentInput(StrictRequestModel):
+class TournamentInput(CompatibleRequestModel):
     user_id: str | None = Field(
         default=None,
         deprecated=True,

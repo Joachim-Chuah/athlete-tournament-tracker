@@ -45,11 +45,13 @@ def test_contract_contains_required_components_and_security():
     assert contract["components"]["securitySchemes"]["bearerAuth"]["scheme"] == "bearer"
 
 
-def test_contract_marks_requests_strict_and_responses_additive():
+def test_contract_marks_top_level_requests_and_responses_additive():
     schemas = generate_openapi()["components"]["schemas"]
     user_id = schemas["TournamentInput"]["properties"]["user_id"]
 
-    assert schemas["TournamentInput"]["additionalProperties"] is False
+    assert schemas["TournamentInput"]["additionalProperties"] is True
+    assert schemas["ProfileRequest"]["additionalProperties"] is True
+    assert schemas["PrizeRoundsInput"]["additionalProperties"] is False
     assert schemas["TournamentWithPnl"]["additionalProperties"] is True
     assert schemas["PnlResult"]["additionalProperties"] is True
     assert user_id["deprecated"] is True
