@@ -37,10 +37,15 @@ def create_app() -> Flask:
         g.email = identity["email"]
         return None
 
-    app.register_blueprint(profile.bp)
-    app.register_blueprint(tournaments.bp)
-    app.register_blueprint(fx.bp)
-    app.register_blueprint(search.bp)
+    blueprints = (
+        ("profile", profile.bp),
+        ("tournaments", tournaments.bp),
+        ("fx", fx.bp),
+        ("search", search.bp),
+    )
+    for name, blueprint in blueprints:
+        app.register_blueprint(blueprint, url_prefix="/api", name=f"{name}_legacy")
+        app.register_blueprint(blueprint, url_prefix="/api/v1", name=f"{name}_v1")
 
     @app.get("/health")
     def health():

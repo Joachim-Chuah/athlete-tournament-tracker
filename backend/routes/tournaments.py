@@ -147,7 +147,7 @@ def _with_pnl(t: Tournament, home_currency: str) -> dict:
     return d
 
 
-@bp.get("/api/tournaments")
+@bp.get("/tournaments")
 def list_tournaments():
     user_id = g.user_id
 
@@ -164,7 +164,7 @@ def list_tournaments():
         return jsonify([_with_pnl(t, home_currency) for t in tournaments])
 
 
-@bp.post("/api/tournaments")
+@bp.post("/tournaments")
 def create_tournament():
     body = request.get_json(silent=True) or {}
 
@@ -227,7 +227,7 @@ def create_tournament():
         return jsonify(_with_pnl(t, user.home_currency)), 201
 
 
-@bp.post("/api/tournaments/pnl-preview")
+@bp.post("/tournaments/pnl-preview")
 def preview_tournament_pnl():
     body = request.get_json(silent=True) or {}
 
@@ -243,7 +243,7 @@ def preview_tournament_pnl():
     return jsonify(calculate_pnl(coerced))
 
 
-@bp.get("/api/tournaments/<id>")
+@bp.get("/tournaments/<id>")
 def get_tournament(id: str):
     with Session() as db:
         t = db.query(Tournament).filter_by(id=id).first()
@@ -254,7 +254,7 @@ def get_tournament(id: str):
         return jsonify(_with_pnl(t, home_currency))
 
 
-@bp.patch("/api/tournaments/<id>")
+@bp.patch("/tournaments/<id>")
 def update_tournament(id: str):
     body = request.get_json(silent=True) or {}
 
@@ -292,7 +292,7 @@ def update_tournament(id: str):
         return jsonify(_with_pnl(t, home_currency))
 
 
-@bp.delete("/api/tournaments/<id>")
+@bp.delete("/tournaments/<id>")
 def delete_tournament(id: str):
     with Session() as db:
         t = db.query(Tournament).filter_by(id=id).first()

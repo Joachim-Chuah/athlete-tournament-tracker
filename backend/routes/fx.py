@@ -4,7 +4,7 @@ from backend.utils.currency import fetch_rates, convert
 bp = Blueprint("fx", __name__)
 
 
-@bp.get("/api/fx")
+@bp.get("/fx")
 def fx_convert():
     from_ = request.args.get("from", "").upper()
     to = request.args.get("to", "").upper()

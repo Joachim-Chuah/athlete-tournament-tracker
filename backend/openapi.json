@@ -1,0 +1,1871 @@
+{
+  "components": {
+    "schemas": {
+      "DeleteResult": {
+        "additionalProperties": false,
+        "properties": {
+          "success": {
+            "title": "Success",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "success"
+        ],
+        "title": "DeleteResult",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "title": "Error",
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "Fx": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "title": "Amount",
+            "type": "number"
+          },
+          "converted": {
+            "title": "Converted",
+            "type": "number"
+          },
+          "from": {
+            "title": "From",
+            "type": "string"
+          },
+          "rate": {
+            "title": "Rate",
+            "type": "number"
+          },
+          "to": {
+            "title": "To",
+            "type": "string"
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "amount",
+          "converted",
+          "rate"
+        ],
+        "title": "Fx",
+        "type": "object"
+      },
+      "Health": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "const": "ok",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "Health",
+        "type": "object"
+      },
+      "KnownTournament": {
+        "additionalProperties": false,
+        "properties": {
+          "country": {
+            "title": "Country",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "duration_days": {
+            "title": "Duration Days",
+            "type": "integer"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "estimated_prize_total": {
+            "title": "Estimated Prize Total",
+            "type": "number"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "location": {
+            "title": "Location",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "prize_rounds": {
+            "$ref": "#/components/schemas/PrizeRounds"
+          },
+          "prize_total": {
+            "title": "Prize Total",
+            "type": "number"
+          },
+          "sport": {
+            "title": "Sport",
+            "type": "string"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "tier": {
+            "title": "Tier",
+            "type": "string"
+          },
+          "tour_level": {
+            "title": "Tour Level",
+            "type": "string"
+          },
+          "typical_month": {
+            "title": "Typical Month",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "sport",
+          "tier",
+          "tour_level",
+          "location",
+          "country",
+          "currency",
+          "typical_month",
+          "duration_days",
+          "prize_total",
+          "estimated_prize_total",
+          "prize_rounds",
+          "start_date",
+          "end_date"
+        ],
+        "title": "KnownTournament",
+        "type": "object"
+      },
+      "PnlResult": {
+        "additionalProperties": false,
+        "properties": {
+          "break_even_round": {
+            "anyOf": [
+              {
+                "enum": [
+                  "r1",
+                  "r2",
+                  "r3",
+                  "qf",
+                  "sf",
+                  "f",
+                  "w"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Break Even Round"
+          },
+          "scenarios": {
+            "items": {
+              "$ref": "#/components/schemas/PnlScenario"
+            },
+            "title": "Scenarios",
+            "type": "array"
+          },
+          "total_expenses": {
+            "title": "Total Expenses",
+            "type": "number"
+          },
+          "total_income_base": {
+            "title": "Total Income Base",
+            "type": "number"
+          }
+        },
+        "required": [
+          "total_expenses",
+          "total_income_base",
+          "scenarios",
+          "break_even_round"
+        ],
+        "title": "PnlResult",
+        "type": "object"
+      },
+      "PnlScenario": {
+        "additionalProperties": false,
+        "properties": {
+          "net_result": {
+            "title": "Net Result",
+            "type": "number"
+          },
+          "prize_money": {
+            "title": "Prize Money",
+            "type": "number"
+          },
+          "prize_money_after_tax": {
+            "title": "Prize Money After Tax",
+            "type": "number"
+          },
+          "profitable": {
+            "title": "Profitable",
+            "type": "boolean"
+          },
+          "round": {
+            "enum": [
+              "r1",
+              "r2",
+              "r3",
+              "qf",
+              "sf",
+              "f",
+              "w"
+            ],
+            "title": "Round",
+            "type": "string"
+          },
+          "scenario": {
+            "enum": [
+              "worst",
+              "realistic",
+              "best"
+            ],
+            "title": "Scenario",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario",
+          "round",
+          "prize_money",
+          "prize_money_after_tax",
+          "net_result",
+          "profitable"
+        ],
+        "title": "PnlScenario",
+        "type": "object"
+      },
+      "PrizeRounds": {
+        "additionalProperties": false,
+        "properties": {
+          "f": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "F"
+          },
+          "qf": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Qf"
+          },
+          "r1": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "R1"
+          },
+          "r2": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "R2"
+          },
+          "r3": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "R3"
+          },
+          "sf": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sf"
+          },
+          "w": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "W"
+          }
+        },
+        "title": "PrizeRounds",
+        "type": "object"
+      },
+      "Profile": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "home_country": {
+            "title": "Home Country",
+            "type": "string"
+          },
+          "home_currency": {
+            "title": "Home Currency",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "monthly_income": {
+            "title": "Monthly Income",
+            "type": "number"
+          },
+          "monthly_sponsorship": {
+            "title": "Monthly Sponsorship",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "runway_tournaments": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Runway Tournaments"
+          },
+          "savings_balance": {
+            "title": "Savings Balance",
+            "type": "number"
+          },
+          "sport": {
+            "title": "Sport",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name",
+          "home_country",
+          "home_currency",
+          "sport",
+          "monthly_income",
+          "savings_balance",
+          "monthly_sponsorship",
+          "created_at"
+        ],
+        "title": "Profile",
+        "type": "object"
+      },
+      "ProfileRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Email"
+          },
+          "home_country": {
+            "title": "Home Country",
+            "type": "string"
+          },
+          "home_currency": {
+            "maxLength": 3,
+            "minLength": 3,
+            "title": "Home Currency",
+            "type": "string"
+          },
+          "monthly_income": {
+            "default": 0,
+            "title": "Monthly Income",
+            "type": "number"
+          },
+          "monthly_sponsorship": {
+            "default": 0,
+            "title": "Monthly Sponsorship",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "savings_balance": {
+            "default": 0,
+            "title": "Savings Balance",
+            "type": "number"
+          },
+          "sport": {
+            "title": "Sport",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "home_country",
+          "home_currency",
+          "sport"
+        ],
+        "title": "ProfileRequest",
+        "type": "object"
+      },
+      "Tournament": {
+        "additionalProperties": false,
+        "properties": {
+          "accommodation_total": {
+            "title": "Accommodation Total",
+            "type": "number"
+          },
+          "coaching_cost": {
+            "title": "Coaching Cost",
+            "type": "number"
+          },
+          "country": {
+            "title": "Country",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "daily_spending_cap": {
+            "title": "Daily Spending Cap",
+            "type": "number"
+          },
+          "duration_days": {
+            "title": "Duration Days",
+            "type": "integer"
+          },
+          "end_date": {
+            "title": "End Date",
+            "type": "string"
+          },
+          "entry_fee": {
+            "title": "Entry Fee",
+            "type": "number"
+          },
+          "flight_cost": {
+            "title": "Flight Cost",
+            "type": "number"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "location": {
+            "title": "Location",
+            "type": "string"
+          },
+          "misc_cost": {
+            "title": "Misc Cost",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "prize_rounds": {
+            "$ref": "#/components/schemas/PrizeRounds"
+          },
+          "prize_tax_rate": {
+            "title": "Prize Tax Rate",
+            "type": "number"
+          },
+          "sponsorship_allocated": {
+            "title": "Sponsorship Allocated",
+            "type": "number"
+          },
+          "start_date": {
+            "title": "Start Date",
+            "type": "string"
+          },
+          "subsidy_amount": {
+            "title": "Subsidy Amount",
+            "type": "number"
+          },
+          "subsidy_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subsidy By"
+          },
+          "subsidy_covers": {
+            "anyOf": [
+              {
+                "enum": [
+                  "flights",
+                  "accommodation",
+                  "full_expenses",
+                  "flat_stipend"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subsidy Covers"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "name",
+          "location",
+          "country",
+          "currency",
+          "start_date",
+          "end_date",
+          "duration_days",
+          "entry_fee",
+          "flight_cost",
+          "accommodation_total",
+          "daily_spending_cap",
+          "coaching_cost",
+          "misc_cost",
+          "subsidy_by",
+          "subsidy_amount",
+          "subsidy_covers",
+          "sponsorship_allocated",
+          "prize_rounds",
+          "prize_tax_rate",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "Tournament",
+        "type": "object"
+      },
+      "TournamentCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "accommodation_total": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Accommodation Total"
+          },
+          "coaching_cost": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Coaching Cost"
+          },
+          "country": {
+            "title": "Country",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "daily_spending_cap": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Daily Spending Cap"
+          },
+          "duration_days": {
+            "minimum": 1,
+            "title": "Duration Days",
+            "type": "integer"
+          },
+          "end_date": {
+            "title": "End Date",
+            "type": "string"
+          },
+          "entry_fee": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Entry Fee"
+          },
+          "flight_cost": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Flight Cost"
+          },
+          "location": {
+            "title": "Location",
+            "type": "string"
+          },
+          "misc_cost": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Misc Cost"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "prize_rounds": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PrizeRounds"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "prize_tax_rate": {
+            "anyOf": [
+              {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Prize Tax Rate"
+          },
+          "sponsorship_allocated": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sponsorship Allocated"
+          },
+          "start_date": {
+            "title": "Start Date",
+            "type": "string"
+          },
+          "subsidy_amount": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subsidy Amount"
+          },
+          "subsidy_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subsidy By"
+          },
+          "subsidy_covers": {
+            "anyOf": [
+              {
+                "enum": [
+                  "flights",
+                  "accommodation",
+                  "full_expenses",
+                  "flat_stipend"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subsidy Covers"
+          }
+        },
+        "required": [
+          "name",
+          "location",
+          "country",
+          "currency",
+          "start_date",
+          "end_date",
+          "duration_days"
+        ],
+        "title": "TournamentCreate",
+        "type": "object"
+      },
+      "TournamentInput": {
+        "additionalProperties": false,
+        "properties": {
+          "accommodation_total": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Accommodation Total"
+          },
+          "coaching_cost": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Coaching Cost"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Country"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Currency"
+          },
+          "daily_spending_cap": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Daily Spending Cap"
+          },
+          "duration_days": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Duration Days"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "End Date"
+          },
+          "entry_fee": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Entry Fee"
+          },
+          "flight_cost": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Flight Cost"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Location"
+          },
+          "misc_cost": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Misc Cost"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Name"
+          },
+          "prize_rounds": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PrizeRounds"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "prize_tax_rate": {
+            "anyOf": [
+              {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Prize Tax Rate"
+          },
+          "sponsorship_allocated": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sponsorship Allocated"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Start Date"
+          },
+          "subsidy_amount": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subsidy Amount"
+          },
+          "subsidy_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subsidy By"
+          },
+          "subsidy_covers": {
+            "anyOf": [
+              {
+                "enum": [
+                  "flights",
+                  "accommodation",
+                  "full_expenses",
+                  "flat_stipend"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subsidy Covers"
+          }
+        },
+        "title": "TournamentInput",
+        "type": "object"
+      },
+      "TournamentWithPnl": {
+        "additionalProperties": false,
+        "properties": {
+          "accommodation_total": {
+            "title": "Accommodation Total",
+            "type": "number"
+          },
+          "coaching_cost": {
+            "title": "Coaching Cost",
+            "type": "number"
+          },
+          "country": {
+            "title": "Country",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "daily_spending_cap": {
+            "title": "Daily Spending Cap",
+            "type": "number"
+          },
+          "duration_days": {
+            "title": "Duration Days",
+            "type": "integer"
+          },
+          "end_date": {
+            "title": "End Date",
+            "type": "string"
+          },
+          "entry_fee": {
+            "title": "Entry Fee",
+            "type": "number"
+          },
+          "flight_cost": {
+            "title": "Flight Cost",
+            "type": "number"
+          },
+          "home_currency": {
+            "title": "Home Currency",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "location": {
+            "title": "Location",
+            "type": "string"
+          },
+          "misc_cost": {
+            "title": "Misc Cost",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "pnl": {
+            "$ref": "#/components/schemas/PnlResult"
+          },
+          "prize_rounds": {
+            "$ref": "#/components/schemas/PrizeRounds"
+          },
+          "prize_tax_rate": {
+            "title": "Prize Tax Rate",
+            "type": "number"
+          },
+          "sponsorship_allocated": {
+            "title": "Sponsorship Allocated",
+            "type": "number"
+          },
+          "start_date": {
+            "title": "Start Date",
+            "type": "string"
+          },
+          "subsidy_amount": {
+            "title": "Subsidy Amount",
+            "type": "number"
+          },
+          "subsidy_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subsidy By"
+          },
+          "subsidy_covers": {
+            "anyOf": [
+              {
+                "enum": [
+                  "flights",
+                  "accommodation",
+                  "full_expenses",
+                  "flat_stipend"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subsidy Covers"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "name",
+          "location",
+          "country",
+          "currency",
+          "start_date",
+          "end_date",
+          "duration_days",
+          "entry_fee",
+          "flight_cost",
+          "accommodation_total",
+          "daily_spending_cap",
+          "coaching_cost",
+          "misc_cost",
+          "subsidy_by",
+          "subsidy_amount",
+          "subsidy_covers",
+          "sponsorship_allocated",
+          "prize_rounds",
+          "prize_tax_rate",
+          "created_at",
+          "updated_at",
+          "home_currency",
+          "pnl"
+        ],
+        "title": "TournamentWithPnl",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "bearerFormat": "Supabase JWT",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "Versioned contract for web and mobile consumers.",
+    "title": "Athlete Tournament Tracker API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/fx": {
+      "get": {
+        "operationId": "convertCurrency",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "required": true,
+            "schema": {
+              "maxLength": 3,
+              "minLength": 3,
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": true,
+            "schema": {
+              "maxLength": 3,
+              "minLength": 3,
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "amount",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Fx"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid query parameters"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid bearer token"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream service unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/profile": {
+      "get": {
+        "operationId": "getProfile",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/Profile"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Profile or null before setup"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid bearer token"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream service unavailable"
+          }
+        }
+      },
+      "post": {
+        "operationId": "saveProfile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid bearer token"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid request body"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream service unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/tournaments": {
+      "get": {
+        "operationId": "listTournaments",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TournamentWithPnl"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid bearer token"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream service unavailable"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createTournament",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TournamentCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TournamentWithPnl"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid bearer token"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Profile setup required"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid request body"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream service unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/tournaments/pnl-preview": {
+      "post": {
+        "operationId": "previewTournamentPnl",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TournamentInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PnlResult"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid bearer token"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid request body"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream service unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/tournaments/search": {
+      "get": {
+        "operationId": "searchKnownTournaments",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sport",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/KnownTournament"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid bearer token"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream service unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/tournaments/{id}": {
+      "delete": {
+        "operationId": "deleteTournament",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResult"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid bearer token"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Resource not found or not owned by the caller"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream service unavailable"
+          }
+        }
+      },
+      "get": {
+        "operationId": "getTournament",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TournamentWithPnl"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid bearer token"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Resource not found or not owned by the caller"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream service unavailable"
+          }
+        }
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "patch": {
+        "operationId": "updateTournament",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TournamentInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TournamentWithPnl"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing or invalid bearer token"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Resource not found or not owned by the caller"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid request body"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream service unavailable"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            },
+            "description": "Success"
+          }
+        },
+        "security": []
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}

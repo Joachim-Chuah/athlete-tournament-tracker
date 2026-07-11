@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.database import Base
 
-# Reference the enum Prisma already created — don't recreate it
+# Match the existing database enum without trying to recreate it at runtime.
 subsidy_covers_type = SAEnum(
     "flights", "accommodation", "full_expenses", "flat_stipend",
     name="SubsidyCovers",
@@ -154,6 +154,7 @@ class KnownTournament(Base):
             "typical_month": self.start_date.month if self.start_date else 6,
             "duration_days": self.duration_days,
             "prize_total": self.prize_total,
+            "estimated_prize_total": self.prize_total,
             "prize_rounds": self.prize_rounds,
             "start_date": self.start_date.date().isoformat() if self.start_date else None,
             "end_date": self.end_date.date().isoformat() if self.end_date else None,

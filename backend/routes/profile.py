@@ -6,7 +6,7 @@ from backend.utils.pnl import calculate_pnl, calculate_runway
 bp = Blueprint("profile", __name__)
 
 
-@bp.get("/api/profile")
+@bp.get("/profile")
 def get_profile():
     with Session() as db:
         user = db.query(User).filter_by(id=g.user_id).first()
@@ -32,7 +32,7 @@ def get_profile():
         return jsonify(result)
 
 
-@bp.post("/api/profile")
+@bp.post("/profile")
 def save_profile():
     body = request.get_json(silent=True) or {}
 

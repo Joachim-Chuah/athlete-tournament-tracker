@@ -173,6 +173,7 @@ class TestPsaRawToResults:
         assert r["country"] == "UK"
         assert r["location"] == "London"
         assert r["prize_total"] == 50_000
+        assert r["estimated_prize_total"] == r["prize_total"]
         assert "prize_rounds" in r
 
     def test_result_start_and_end_dates(self):
@@ -269,3 +270,27 @@ class TestSearchEndpoint:
                 r = client.get("/api/tournaments/search?q=open&sport=squash",
                                headers=auth_headers)
         assert r.status_code == 200
+
+    def test_db_result_preserves_both_equal_prize_total_fields(
+        self, client, mock_auth, auth_headers
+    ):
+        known = MagicMock()
+        known.to_dict.return_value = {
+            "id": "psa-1",
+            "name": "Test Open",
+            "prize_total": 50_000,
+            "estimated_prize_total": 50_000,
+            "start_date": "2026-05-01",
+        }
+        mock_db = MagicMock()
+        query_chain = MagicMock()
+        query_chain.filter.return_value = query_chain
+        query_chain.order_by.return_value.limit.return_value.all.return_value = [known]
+        mock_db.query.return_value = query_chain
+        cm = make_session_cm(mock_db)
+
+        with patch("backend.routes.search.Session", return_value=cm):
+            response = client.get("/api/tournaments/search", headers=auth_headers)
+
+        result = response.get_json()[0]
+        assert result["estimated_prize_total"] == result["prize_total"]

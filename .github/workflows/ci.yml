@@ -13,19 +13,23 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: npm run lint
+        run: pnpm lint
 
       - name: Build check
-        run: npm run build
+        run: pnpm build
         env:
           NEXT_PUBLIC_API_URL: http://localhost:5000
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
@@ -56,6 +60,9 @@ jobs:
         env:
           # Stub vars so app.py imports without error (no real DB or auth needed)
           SUPABASE_JWKS_URL: https://placeholder.supabase.co/auth/v1/.well-known/jwks.json
+
+      - name: Check generated OpenAPI contract
+        run: python -m backend.openapi --check
 
       - name: Post coverage comment
         if: github.event_name == 'pull_request'
