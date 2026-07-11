@@ -2,7 +2,7 @@
   "components": {
     "schemas": {
       "DeleteResult": {
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
           "success": {
             "title": "Success",
@@ -16,7 +16,7 @@
         "type": "object"
       },
       "ErrorResponse": {
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
           "error": {
             "title": "Error",
@@ -30,7 +30,7 @@
         "type": "object"
       },
       "Fx": {
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
           "amount": {
             "title": "Amount",
@@ -64,7 +64,7 @@
         "type": "object"
       },
       "Health": {
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
           "status": {
             "const": "ok",
@@ -79,7 +79,7 @@
         "type": "object"
       },
       "KnownTournament": {
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
           "country": {
             "title": "Country",
@@ -176,7 +176,7 @@
         "type": "object"
       },
       "PnlResult": {
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
           "break_even_round": {
             "anyOf": [
@@ -224,7 +224,7 @@
         "type": "object"
       },
       "PnlScenario": {
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
           "net_result": {
             "title": "Net Result",
@@ -277,7 +277,7 @@
         "type": "object"
       },
       "PrizeRounds": {
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
           "f": {
             "anyOf": [
@@ -374,8 +374,106 @@
         "title": "PrizeRounds",
         "type": "object"
       },
-      "Profile": {
+      "PrizeRoundsInput": {
         "additionalProperties": false,
+        "properties": {
+          "f": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "F"
+          },
+          "qf": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Qf"
+          },
+          "r1": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "R1"
+          },
+          "r2": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "R2"
+          },
+          "r3": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "R3"
+          },
+          "sf": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sf"
+          },
+          "w": {
+            "anyOf": [
+              {
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "W"
+          }
+        },
+        "title": "PrizeRoundsInput",
+        "type": "object"
+      },
+      "Profile": {
+        "additionalProperties": true,
         "properties": {
           "created_at": {
             "title": "Created At",
@@ -504,7 +602,7 @@
         "type": "object"
       },
       "Tournament": {
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
           "accommodation_total": {
             "title": "Accommodation Total",
@@ -762,7 +860,7 @@
           "prize_rounds": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/PrizeRounds"
+                "$ref": "#/components/schemas/PrizeRoundsInput"
               },
               {
                 "type": "null"
@@ -843,6 +941,20 @@
             ],
             "default": null,
             "title": "Subsidy Covers"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "deprecated": true,
+            "description": "Deprecated compatibility property. Ignored by the server; ownership is always derived from the authenticated bearer token.",
+            "title": "User Id"
           }
         },
         "required": [
@@ -1014,7 +1126,7 @@
           "prize_rounds": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/PrizeRounds"
+                "$ref": "#/components/schemas/PrizeRoundsInput"
               },
               {
                 "type": "null"
@@ -1103,13 +1215,27 @@
             ],
             "default": null,
             "title": "Subsidy Covers"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "deprecated": true,
+            "description": "Deprecated compatibility property. Ignored by the server; ownership is always derived from the authenticated bearer token.",
+            "title": "User Id"
           }
         },
         "title": "TournamentInput",
         "type": "object"
       },
       "TournamentWithPnl": {
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
           "accommodation_total": {
             "title": "Accommodation Total",

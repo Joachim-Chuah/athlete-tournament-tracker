@@ -45,6 +45,17 @@ def test_contract_contains_required_components_and_security():
     assert contract["components"]["securitySchemes"]["bearerAuth"]["scheme"] == "bearer"
 
 
+def test_contract_marks_requests_strict_and_responses_additive():
+    schemas = generate_openapi()["components"]["schemas"]
+    user_id = schemas["TournamentInput"]["properties"]["user_id"]
+
+    assert schemas["TournamentInput"]["additionalProperties"] is False
+    assert schemas["TournamentWithPnl"]["additionalProperties"] is True
+    assert schemas["PnlResult"]["additionalProperties"] is True
+    assert user_id["deprecated"] is True
+    assert "authenticated bearer token" in user_id["description"]
+
+
 def test_known_tournament_schema_requires_equal_alias_fields_from_route_data():
     data = {
         "id": "psa-1",
