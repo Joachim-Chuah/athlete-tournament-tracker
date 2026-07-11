@@ -88,6 +88,7 @@ def make_mock_tournament(prize_rounds=None, net_loss_realistic=4200.0):
         "daily_spending_cap": 150,
         "coaching_cost": 600,
         "misc_cost": 200,
+        "subsidy_by": None,
         "subsidy_amount": 0,
         "subsidy_covers": None,
         "sponsorship_allocated": 500,

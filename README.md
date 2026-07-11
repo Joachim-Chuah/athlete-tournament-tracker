@@ -22,7 +22,7 @@ Models prize money across worst/realistic/best-case round scenarios, factors in 
 ```bash
 git clone https://github.com/Joachim-Chuah/athlete-tournament-tracker.git
 cd athlete-tournament-tracker
-npm install
+pnpm install
 ```
 
 ### 2. Set up the Python backend
@@ -42,15 +42,14 @@ Fill in `.env.local` — see the [Environment Variables](#environment-variables)
 
 ### 4. Set up the database
 
-```bash
-npx prisma db push
-npx prisma generate
-```
+The active schema is defined by `backend/models.py`. Existing deployments must
+use a database with that schema; see `backend/EXTRACTION.md` for the safe
+SQLAlchemy/Alembic baseline plan.
 
 ### 5. Seed PSA tournament data (optional but recommended)
 
 ```bash
-node scripts/scrape-psa.js
+pnpm scrape:psa
 ```
 
 This pulls ~600 squash tournaments from the PSA API into your database so the Quick Fill search works out of the box.
@@ -66,7 +65,7 @@ You need **two terminals** running simultaneously:
 
 **Terminal 2 — Next.js frontend:**
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000). Flask runs on port 5000, Next.js on port 3000.
@@ -172,11 +171,8 @@ athlete-tournament-tracker/
 │   │   └── utils.ts                # cn(), formatMoney, formatDate
 │   └── types/index.ts              # Shared TypeScript types
 │
-├── prisma/
-│   └── schema.prisma               # Database schema
-│
 ├── scripts/
-│   └── scrape-psa.js               # PSA tournament data scraper
+│   └── scrape_psa.py                # PSA tournament data scraper
 │
 ├── tests/unit/                     # JS unit tests (pnl + currency)
 ├── .github/workflows/
@@ -201,12 +197,10 @@ athlete-tournament-tracker/
 
 ### Frontend (Node)
 ```bash
-npm run dev            # Start Next.js on localhost:3000
-npm run build          # Production build
-npm run lint           # ESLint
-npm run test           # JS unit tests
-npm run test:coverage  # JS tests + coverage report
-npm run scrape:psa     # Pull latest PSA tournament data into DB
+pnpm dev            # Start Next.js on localhost:3000
+pnpm build          # Production build
+pnpm lint           # ESLint
+pnpm scrape:psa     # Pull latest PSA tournament data into DB
 ```
 
 ### Backend (Python)
@@ -219,16 +213,30 @@ SUPABASE_JWKS_URL=https://placeholder.supabase.co/auth/v1/.well-known/jwks.json 
   --cov-report=term-missing              # Python tests + coverage
 ```
 
+### Versioned API contract
+
+`backend/api_schemas.py` is the schema source for the checked-in OpenAPI 3.1
+contract. Generate and verify it deterministically with:
+
+```bash
+.venv/bin/python -m backend.openapi --write
+.venv/bin/python -m backend.openapi --check
+```
+
+CI runs the check command and fails when `backend/openapi.json` does not match
+the schema source. See `backend/API_COMPATIBILITY.md` for the legacy and v1
+compatibility policy.
+
 ---
 
 ## Tech Stack
 
 | Layer | Choice |
 |---|---|
-| Frontend | Next.js 14 (App Router) + Tailwind CSS |
+| Frontend | Next.js 16 (App Router) + Tailwind CSS |
 | Backend | Python Flask |
 | Database | PostgreSQL via Supabase |
-| ORM | SQLAlchemy + psycopg2 |
+| ORM | SQLAlchemy + psycopg 3 |
 | FX Rates | Open Exchange Rates |
 | Tournament Data | PSA World Tour API (scraped weekly) |
 | JS Testing | Vitest |

@@ -12,11 +12,11 @@ class Base(DeclarativeBase):
 
 
 def normalize_db_url(url: str) -> str:
-    """Make a Supabase/Prisma DATABASE_URL safe for the psycopg3 driver.
+    """Make a Supabase DATABASE_URL safe for the psycopg 3 driver.
 
     - Swap the scheme to postgresql+psycopg (psycopg2 has no Python 3.14 wheels).
-    - Drop the `pgbouncer` query param: it's a Prisma-only flag that libpq
-      rejects as an invalid connection option when psycopg forwards it.
+    - Drop the legacy `pgbouncer` query param, which libpq rejects as an invalid
+      connection option when psycopg forwards it.
     """
     # Use psycopg3 driver (postgresql+psycopg)
     if url.startswith("postgresql://"):

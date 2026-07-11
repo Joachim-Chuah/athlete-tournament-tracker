@@ -98,6 +98,7 @@ def _comp_to_result(raw: dict, comp: dict, start_date: str | None, end_date: str
         "typical_month": start.month if start else 6,
         "duration_days": duration,
         "prize_total": prize_total,
+        "estimated_prize_total": prize_total,
         "prize_rounds": _estimate_prize_rounds(prize_total, draw_size, tier),
         "start_date": start_date,
         "end_date": end_date,
@@ -158,7 +159,7 @@ def _search_psa_live(q: str) -> list:
         return []
 
 
-@bp.get("/api/tournaments/search")
+@bp.get("/tournaments/search")
 def search_tournaments():
     q = request.args.get("q", "").strip()
     sport = request.args.get("sport", "").strip().lower() or None
